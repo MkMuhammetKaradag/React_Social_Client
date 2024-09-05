@@ -30,7 +30,7 @@ const authLink = setContext(async (_, { headers }) => {
 //todo:  websocket link
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:3000/graphql',
+  uri: 'ws://localhost:8080/graphql',
   options: {
     connectionParams: () => {
       const token = getToken('mk_session');
