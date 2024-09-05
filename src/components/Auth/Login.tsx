@@ -52,7 +52,7 @@ const Login: FC<LoginProps> = ({ setActiveState }) => {
       dispatch(setUser(result.data.loginUser.user));
       reset();
     } catch (error) {
-      setLoginError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+      setLoginError('Login failed. Please check your information.');
       console.error('Login error:', error);
     }
   };

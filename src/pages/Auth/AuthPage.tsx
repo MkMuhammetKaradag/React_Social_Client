@@ -60,7 +60,7 @@ function AuthPage() {
       <div className="relative bg-white w-full max-w-[470px] h-[80%] pb-16 rounded-lg">
         <AuthComponent
           setActiveState={handleSetActiveState}
-          activationToken={verifyCode}
+          token={verifyCode}
         />
         <div className="absolute flex items-center justify-center py-5 left-0 bottom-0 border-t w-full">
           <span className="text-[14px] text-gray-600">

@@ -43,7 +43,7 @@ const ForgotPassword: FC<ForgotPasswordProps> = ({ setActiveState }) => {
       reset();
     } catch (error: any) {
       setforgotPasswordError(
-        'şifre sıfırlama başarısız başarısız. Lütfen bilgilerinizi kontrol edin.'
+        'password reset failed failed. Please check your information.'
       );
       console.log('GraphQL Errors:', error.graphQLErrors[0].message);
     }
