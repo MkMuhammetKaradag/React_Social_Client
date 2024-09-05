@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormError, InputField, SubmitButton } from './FormComponents';
+import { FORGOT_PASSWORD } from '../../graphql/mutations/ForgotPassword';
+import { useMutation } from '@apollo/client';
 
 type ForgotPasswordProps = {
   setActiveState: (route: string) => void;
@@ -14,6 +16,7 @@ const formSchema = z.object({
 
 type ForgotPasswordSchema = z.infer<typeof formSchema>;
 const ForgotPassword: FC<ForgotPasswordProps> = ({ setActiveState }) => {
+  const [forgotPassword, { loading }] = useMutation(FORGOT_PASSWORD);
   const {
     register,
     handleSubmit,
@@ -29,8 +32,14 @@ const ForgotPassword: FC<ForgotPasswordProps> = ({ setActiveState }) => {
   const onSubmit = async (data: ForgotPasswordSchema) => {
     setforgotPasswordError(null);
     try {
-      console.log(data);
-
+      await forgotPassword({
+        variables: {
+          input: {
+            email: data.email,
+          },
+        },
+      });
+      console.log('Please check your email to reset your password!');
       reset();
     } catch (error: any) {
       setforgotPasswordError(
