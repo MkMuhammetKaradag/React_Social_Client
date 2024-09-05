@@ -1,16 +1,14 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
 import CreatePost from './components/CreatePost';
-
+import { ApolloProvider } from '@apollo/client';
+import client from './graphql/apolloClient.ts';
+import ReduxProvider from './context/ReduxProvider.tsx';
 function App() {
-
-
   return (
-    <>
-      <CreatePost></CreatePost>
-    </>
+    <ApolloProvider client={client}>
+      <ReduxProvider>
+        <CreatePost></CreatePost>
+      </ReduxProvider>
+    </ApolloProvider>
   );
 }
 

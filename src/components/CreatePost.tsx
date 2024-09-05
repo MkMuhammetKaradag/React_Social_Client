@@ -7,6 +7,7 @@ import { GET_SIGNED_URL } from '../graphql/mutations/getSignedUrl';
 // Types
 interface Media {
   url: string;
+  publicId: string;
   type: 'IMAGE' | 'VIDEO';
 }
 
@@ -32,6 +33,7 @@ interface SignUrlInput {
 
 interface CreatePostInput {
   title: string;
+
   media: Media[];
 }
 
@@ -57,7 +59,7 @@ const CreatePost: React.FC = () => {
       video.src = URL.createObjectURL(file);
     });
   };
-  const uploadToCloudinary = async (file: File): Promise<string> => {
+  const uploadToCloudinary = async (file: File) => {
     // Video dosyası kontrolü
     if (file.type.startsWith('video/')) {
       try {
@@ -107,10 +109,10 @@ const CreatePost: React.FC = () => {
           '/upload/c_fill,w_300,h_300/'
         );
       }
-      return transformedUrl;
+      return { url: transformedUrl, publicId };
     } catch (error) {
       console.log(error);
-      return 'hata';
+      throw new Error('sdsdsd');
     }
   };
 
@@ -119,9 +121,10 @@ const CreatePost: React.FC = () => {
 
     const files = Array.from(e.target.files);
     const uploadPromises = files.map(async (file) => {
-      const url = await uploadToCloudinary(file);
+      const uploadimage = await uploadToCloudinary(file);
       return {
-        url,
+        url: uploadimage.url,
+        publicId: uploadimage.publicId,
         type: file.type.startsWith('image/') ? 'IMAGE' : 'VIDEO',
       } as Media;
     });
