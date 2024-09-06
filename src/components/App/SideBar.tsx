@@ -13,6 +13,8 @@ import {
   AiFillLinkedin,
 } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
+import SearchPanel from './SearchPanel';
+import NotificationPanel from './NotificationPanel';
 
 interface MenuItem {
   icon: IconType;
@@ -21,7 +23,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: AiOutlineUser, text: 'AnaSayfa', link: '/' },
+  { icon: AiOutlineUser, text: 'Ana Sayfa', link: '/' },
 
   { icon: AiOutlineSearch, text: 'Ara', link: '/search' },
 
@@ -36,15 +38,21 @@ const menuItems: MenuItem[] = [
 const Sidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
 
   const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-    setIsExpanded(!isExpanded);
+    setIsExpanded((prev) => !prev);
+    setIsSearchOpen((prev) => !prev);
+    // setIsNotificationOpen(false);
+  };
+
+  const toggleNotification = () => {
+    setIsNotificationOpen((prev) => !prev);
+    // setIsSearchOpen(false);
   };
 
   return (
@@ -69,9 +77,6 @@ const Sidebar: React.FC = () => {
               isExpanded ? 'opacity-0 translate-x-full' : 'opacity-100'
             }`}
           />
-          {/* <button onClick={toggleSidebar} className="absolute right-2 text-2xl">
-            {isExpanded ? '←' : '→'}
-          </button> */}
         </div>
 
         <nav className="flex-grow">
@@ -81,7 +86,23 @@ const Sidebar: React.FC = () => {
                 {item.text === 'Ara' ? (
                   <div
                     onClick={toggleSearch}
-                    className="flex items-center bg-red-400 hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out"
+                    className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out"
+                  >
+                    <item.icon className="text-2xl min-w-[1.5rem]" />
+                    <span
+                      className={`ml-4 transition-all duration-300 ease-in-out ${
+                        isExpanded
+                          ? 'opacity-100'
+                          : 'opacity-0 w-0 overflow-hidden'
+                      }`}
+                    >
+                      {item.text}
+                    </span>
+                  </div>
+                ) : item.text === 'Bildirimler' ? (
+                  <div
+                    onClick={toggleNotification}
+                    className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out"
                   >
                     <item.icon className="text-2xl min-w-[1.5rem]" />
                     <span
@@ -97,14 +118,14 @@ const Sidebar: React.FC = () => {
                 ) : (
                   <Link
                     to={item.link}
-                    className="flex items-center bg-yellow-200 hover:bg-gray-900 p-2 rounded transition-all duration-300 ease-in-out"
+                    className="flex items-center hover:bg-gray-900 p-2 rounded transition-all duration-300 ease-in-out overflow-hidden"
                   >
                     <item.icon className="text-2xl min-w-[1.5rem]" />
                     <span
-                      className={`ml-4 transition-all duration-300 ease-in-out ${
+                      className={`ml-4 transition-all duration-300 ease-in-out whitespace-nowrap ${
                         isExpanded
-                          ? 'opacity-100'
-                          : 'opacity-0 w-0 overflow-hidden'
+                          ? 'max-w-[200px] opacity-100'
+                          : 'max-w-0 opacity-0'
                       }`}
                     >
                       {item.text}
@@ -115,12 +136,13 @@ const Sidebar: React.FC = () => {
             ))}
           </ul>
         </nav>
+
         <div className="">
-          <button className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out">
-            <AiOutlineUser size={24} />
+          <button className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out overflow-hidden">
+            <AiOutlineUser className="text-2xl min-w-[1.5rem] flex-shrink-0" />
             <span
-              className={`ml-4 transition-all duration-300 ease-in-out ${
-                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'
+              className={`ml-4 transition-all duration-300 ease-in-out whitespace-nowrap ${
+                isExpanded ? 'max-w-[200px] opacity-100' : 'max-w-0 opacity-0'
               }`}
             >
               Daha fazla
@@ -130,44 +152,19 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Search Panel */}
-      <div
-        className={`fixed top-0 left-${
-          isExpanded ? '64' : '16'
-        } h-full w-80  bg-gray-900 ml-16 z-0  text-white p-4 transition-all translate-x-0  duration-500 transform ${
-          isSearchOpen ? 'translate-x-0 ' : '-translate-x-[calc(100%+4rem)]'
-        }`}
-      >
-        <div className="flex items-center mb-4">
-          <input
-            type="text"
-            placeholder="Ara"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full p-2 bg-gray-900 text-white border border-gray-700 rounded"
-          />
-          <button onClick={toggleSearch} className="ml-2 text-white">
-            Kapat
-          </button>
-        </div>
-        {/* Arama sonuçları */}
-        <div className="mt-4">
-          {/* Örnek arama sonuçları */}
-          <div className="flex items-center mb-2">
-            <img
-              src="https://via.placeholder.com/40"
-              alt="User"
-              className="rounded-full mr-2"
-            />
-            <div>
-              <p className="font-bold">Kullanıcı Adı</p>
-              <p className="text-sm text-gray-400">Tam Ad</p>
-            </div>
-          </div>
-          {/* Daha fazla sonuç... */}
-        </div>
-      </div>
+      <SearchPanel
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
+
+      {/* Notification Panel */}
+      <NotificationPanel
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+      />
 
       {/* Mobile Bottom Bar */}
+
       <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-2 flex justify-around md:hidden">
         {menuItems.slice(0, 5).map((item, index) => (
           <button
