@@ -10,6 +10,7 @@ import {
   AiOutlinePlusSquare,
   AiOutlineUser,
   AiOutlineMenu,
+  AiFillLinkedin,
 } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 
@@ -20,8 +21,10 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { icon: AiFillHome, text: 'Ana Sayfa', link: '/' },
+  { icon: AiOutlineUser, text: 'AnaSayfa', link: '/' },
+
   { icon: AiOutlineSearch, text: 'Ara', link: '/search' },
+
   { icon: AiFillCompass, text: 'Keşfet', link: '/explore' },
   { icon: AiFillVideoCamera, text: 'Reels', link: '/reels' },
   { icon: AiFillMessage, text: 'Mesajlar', link: '/messages' },
@@ -41,65 +44,87 @@ const Sidebar: React.FC = () => {
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
+    setIsExpanded(!isExpanded);
   };
 
   return (
     <>
       {/* Desktop Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full bg-black text-white p-2 flex flex-col transition-all duration-300 ${
+        className={`fixed left-0 z-10 top-0 h-full bg-black text-white p-2 md:flex flex-col hidden transition-all duration-300 ease-in-out ${
           isExpanded ? 'w-64' : 'w-16'
         }`}
       >
-        <div className="mb-10 flex justify-between items-center">
-          {isExpanded ? (
-            <h1 className="text-2xl font-bold">Instagram</h1>
-          ) : (
-            <img
-              src="/instagram-icon.png"
-              alt="Instagram"
-              className="w-8 h-8"
-            />
-          )}
-          <button onClick={toggleSidebar} className="text-2xl">
-            <AiOutlineMenu />
-          </button>
+        <div className="mb-10 flex items-center h-14">
+          <h1
+            className={`text-2xl font-bold absolute left-2 transition-all duration-300 ease-in-out ${
+              isExpanded ? 'opacity-100' : 'opacity-0 -translate-x-full'
+            }`}
+          >
+            Instagram
+          </h1>
+          <AiFillLinkedin
+            size={32}
+            className={`absolute left-2 transition-all duration-300 ease-in-out ${
+              isExpanded ? 'opacity-0 translate-x-full' : 'opacity-100'
+            }`}
+          />
+          {/* <button onClick={toggleSidebar} className="absolute right-2 text-2xl">
+            {isExpanded ? '←' : '→'}
+          </button> */}
         </div>
+
         <nav className="flex-grow">
           <ul>
             {menuItems.map((item, index) => (
               <li key={index} className="mb-4">
                 {item.text === 'Ara' ? (
-                  <button
+                  <div
                     onClick={toggleSearch}
-                    className="flex items-center hover:bg-gray-800 p-2 rounded w-full"
+                    className="flex items-center bg-red-400 hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out"
                   >
-                    <item.icon
-                      className={`text-2xl ${isExpanded ? 'mr-4' : 'mx-auto'}`}
-                    />
-                    {isExpanded && <span>{item.text}</span>}
-                  </button>
+                    <item.icon className="text-2xl min-w-[1.5rem]" />
+                    <span
+                      className={`ml-4 transition-all duration-300 ease-in-out ${
+                        isExpanded
+                          ? 'opacity-100'
+                          : 'opacity-0 w-0 overflow-hidden'
+                      }`}
+                    >
+                      {item.text}
+                    </span>
+                  </div>
                 ) : (
                   <Link
                     to={item.link}
-                    className="flex items-center hover:bg-gray-800 p-2 rounded"
+                    className="flex items-center bg-yellow-200 hover:bg-gray-900 p-2 rounded transition-all duration-300 ease-in-out"
                   >
-                    <item.icon
-                      className={`text-2xl ${isExpanded ? 'mr-4' : 'mx-auto'}`}
-                    />
-                    {isExpanded && <span>{item.text}</span>}
+                    <item.icon className="text-2xl min-w-[1.5rem]" />
+                    <span
+                      className={`ml-4 transition-all duration-300 ease-in-out ${
+                        isExpanded
+                          ? 'opacity-100'
+                          : 'opacity-0 w-0 overflow-hidden'
+                      }`}
+                    >
+                      {item.text}
+                    </span>
                   </Link>
                 )}
               </li>
             ))}
           </ul>
         </nav>
-        <div className="mt-auto">
-          <button className="flex items-center hover:bg-gray-800 p-2 rounded w-full">
-            <AiOutlineUser
-              className={`text-2xl ${isExpanded ? 'mr-4' : 'mx-auto'}`}
-            />
-            {isExpanded && <span>Daha fazla</span>}
+        <div className="">
+          <button className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out">
+            <AiOutlineUser size={24} />
+            <span
+              className={`ml-4 transition-all duration-300 ease-in-out ${
+                isExpanded ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'
+              }`}
+            >
+              Daha fazla
+            </span>
           </button>
         </div>
       </div>
@@ -108,8 +133,8 @@ const Sidebar: React.FC = () => {
       <div
         className={`fixed top-0 left-${
           isExpanded ? '64' : '16'
-        } h-full w-80 bg-gray-900 text-white p-4 transition-all duration-300 transform ${
-          isSearchOpen ? 'translate-x-0' : '-translate-x-full'
+        } h-full w-80  bg-gray-900 ml-16 z-0  text-white p-4 transition-all translate-x-0  duration-500 transform ${
+          isSearchOpen ? 'translate-x-0 ' : '-translate-x-[calc(100%+4rem)]'
         }`}
       >
         <div className="flex items-center mb-4">
@@ -118,7 +143,7 @@ const Sidebar: React.FC = () => {
             placeholder="Ara"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded"
+            className="w-full p-2 bg-gray-900 text-white border border-gray-700 rounded"
           />
           <button onClick={toggleSearch} className="ml-2 text-white">
             Kapat
