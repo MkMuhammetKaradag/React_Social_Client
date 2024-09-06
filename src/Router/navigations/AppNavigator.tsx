@@ -1,12 +1,18 @@
+// src/navigations/AppNavigator.tsx
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import HomePage from '../../pages/App/HomePage';
+import AppLayout from '../AppLayout';
 
-const AppNavigator = () => {
+const AppNavigator: React.FC = () => {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-    </Routes>
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+
+        {/* Diğer rotalarınızı ekleyin */}
+      </Routes>
+    </AppLayout>
   );
 };
 
