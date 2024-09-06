@@ -24,9 +24,9 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
           : 'translate-x-full'
       }`}
     >
-      <button onClick={onClose} className="absolute top-2 right-2 text-white">
+      {/* <button onClick={onClose} className="absolute top-2 right-2 text-white">
         Kapat
-      </button>
+      </button> */}
       {children}
     </div>
   );

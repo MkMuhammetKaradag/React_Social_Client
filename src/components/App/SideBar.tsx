@@ -40,10 +40,6 @@ const Sidebar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
-
   const toggleSearch = () => {
     setIsExpanded((prev) => !prev);
     setIsSearchOpen((prev) => !prev);
