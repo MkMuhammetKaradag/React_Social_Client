@@ -12,6 +12,7 @@ export const GET_HOMA_PAGE_POSTS = gql`
       media {
         url
         type
+        publicId
       }
       commentCount
       likeCount
