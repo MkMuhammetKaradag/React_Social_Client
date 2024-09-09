@@ -5,10 +5,14 @@ import {
   AiOutlineShareAlt,
   AiOutlineSmile,
   AiOutlineMore,
+  AiFillHeart,
 } from 'react-icons/ai';
 import { RiBookmarkLine } from 'react-icons/ri';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { Post } from '../../pages/App/HomePage';
+import { useMutation } from '@apollo/client';
+import { ADD_LIKE_POST } from '../../graphql/mutations/AddLikePost';
+import { REMOVE_LIKE_POST } from '../../graphql/mutations/RemoveLikePost';
 
 type HomePageCardProps = {
   post: Post;
@@ -17,7 +21,10 @@ type HomePageCardProps = {
 const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [mediaError, setMediaError] = useState(false);
-
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [addLike] = useMutation(ADD_LIKE_POST);
+  const [removeLike] = useMutation(REMOVE_LIKE_POST);
   const nextMedia = () => {
     setCurrentMediaIndex((prevIndex) =>
       prevIndex === post.media.length - 1 ? 0 : prevIndex + 1
@@ -32,6 +39,37 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
     setMediaError(false); // Yeni medyaya geçildiğinde hata durumunu sıfırla
   };
 
+  const addLikePost = () => {
+    console.log('liked');
+
+    addLike({
+      variables: {
+        postId: post._id,
+      },
+    })
+      .then((res) => {
+        setLikeCount((prev) => prev + 1);
+        setIsLiked(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+  const removeLikePost = () => {
+    console.log('unliked');
+    removeLike({
+      variables: {
+        postId: post._id,
+      },
+    })
+      .then((res) => {
+        setLikeCount((prev) => prev - 1);
+        setIsLiked(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
   const handleMediaError = () => {
     setMediaError(true);
   };
@@ -121,8 +159,21 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
       <div className="p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex space-x-4">
-            <button>
-              <AiOutlineHeart size={24} />
+            <button
+              onClick={!isLiked ? addLikePost : removeLikePost}
+              className="transition-transform duration-300 ease-in-out transform"
+            >
+              {!isLiked ? (
+                <AiOutlineHeart
+                  size={24}
+                  className=" hover:text-gray-500 transform scale-100 hover:scale-110 transition-transform duration-300 ease-in-out"
+                />
+              ) : (
+                <AiFillHeart
+                  size={24}
+                  className="text-red-500 transform transition-transform duration-300 ease-in-out scale-125 hover:scale-110"
+                />
+              )}
             </button>
             <button>
               <AiOutlineComment size={24} />
@@ -136,7 +187,7 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
           </button>
         </div>
         <div className="text-sm">
-          <span className="font-bold">{post.likeCount} beğenme</span>
+          <span className="font-bold">{likeCount} beğenme</span>
         </div>
         <div className="text-xs text-gray-500 mt-2">
           {post.commentCount} yorumun tümünü gör

@@ -16,6 +16,7 @@ interface PostUser {
 
 export interface Post {
   _id: string;
+  isLiked: boolean;
   user: PostUser;
   media: {
     url: string;

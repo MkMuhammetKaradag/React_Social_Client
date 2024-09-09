@@ -7,15 +7,18 @@ import { AiFillHeart, AiOutlineComment } from 'react-icons/ai';
 const DISCOVER_POSTS = gql`
   query discoverPost($page: Float!, $pageSize: Float!) {
     discoverPosts(input: { page: $page, pageSize: $pageSize }) {
-      _id
-      score
-      commentCount
-      likeCount
-      firstMedia {
-        url
-        publicId
-        type
+      posts {
+        _id
+        score
+        commentCount
+        likeCount
+        firstMedia {
+          url
+          publicId
+          type
+        }
       }
+      totalCount
     }
   }
 `;
@@ -74,19 +77,18 @@ const MediaItem: React.FC<{ media: Media; rowSpan: boolean }> = ({
 const ExploreGrid: React.FC = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const pageSize = 6;
+  const pageSize = 10;
   const { loading, error, data, fetchMore } = useQuery(DISCOVER_POSTS, {
-    variables: { page: 1, pageSize },
+    variables: { page: 1, pageSize: 10 },
   });
 
   if (loading) return <p>Yükleniyor...</p>;
   if (error) return <p>Hata oluştu: {error.message}</p>;
   if (!data) return <p>Veri bulunamadı</p>;
 
-  const posts = data.discoverPosts;
+  const posts = data.discoverPosts.posts;
 
   const loadMore = () => {
-    console.log('hello');
     fetchMore({
       variables: {
         page: page + 1,
@@ -94,18 +96,23 @@ const ExploreGrid: React.FC = () => {
       },
 
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult || fetchMoreResult.discoverPosts.length === 0) {
+        if (
+          !fetchMoreResult ||
+          fetchMoreResult.discoverPosts.posts.length === 0
+        ) {
           setHasMore(false);
           return prev;
         }
-        console.log(fetchMoreResult);
         setPage(page + 1);
-        setHasMore(fetchMoreResult.discoverPosts.length === pageSize);
+        setHasMore(fetchMoreResult.discoverPosts.posts.length === pageSize);
         return {
-          discoverPosts: [
+          discoverPosts: {
             ...prev.discoverPosts,
-            ...fetchMoreResult.discoverPosts,
-          ],
+            posts: [
+              ...prev.discoverPosts.posts,
+              ...fetchMoreResult.discoverPosts.posts,
+            ],
+          },
         };
       },
     });
@@ -116,7 +123,7 @@ const ExploreGrid: React.FC = () => {
       <InfiniteScroll
         dataLength={posts.length}
         next={loadMore}
-        hasMore={hasMore}
+        hasMore={!(posts.length >= data.discoverPosts.totalCount)}
         loader={<h4>Yükleniyor...</h4>}
         endMessage={
           <p style={{ textAlign: 'center' }}>

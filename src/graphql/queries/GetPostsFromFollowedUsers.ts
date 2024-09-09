@@ -3,6 +3,7 @@ export const GET_HOMA_PAGE_POSTS = gql`
   query GetPostsFromFollowedUsers($input: GetPostsFromFollowedUsersInput!) {
     getPostsFromFollowedUsers(input: $input) {
       _id
+      isLiked
       user {
         _id
         firstName
