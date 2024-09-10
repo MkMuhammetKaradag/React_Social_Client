@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import SearchPanel from './SearchPanel';
 import NotificationPanel from './NotificationPanel';
+import CreatePostModal from './CreatePostModal';
 
 interface MenuItem {
   icon: IconType;
@@ -39,6 +40,7 @@ const Sidebar: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
 
   const toggleSearch = () => {
     setIsExpanded((prev) => !prev);
@@ -50,7 +52,9 @@ const Sidebar: React.FC = () => {
     setIsNotificationOpen((prev) => !prev);
     // setIsSearchOpen(false);
   };
-
+  const toggleCreatePostModal = () => {
+    setIsCreatePostModalOpen((prev) => !prev);
+  };
   return (
     <>
       {/* Desktop Sidebar */}
@@ -111,6 +115,22 @@ const Sidebar: React.FC = () => {
                       {item.text}
                     </span>
                   </div>
+                ) : item.text === 'Oluştur' ? (
+                  <div
+                    onClick={toggleCreatePostModal}
+                    className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out"
+                  >
+                    <item.icon className="text-2xl min-w-[1.5rem]" />
+                    <span
+                      className={`ml-4 transition-all duration-300 ease-in-out ${
+                        isExpanded
+                          ? 'opacity-100'
+                          : 'opacity-0 w-0 overflow-hidden'
+                      }`}
+                    >
+                      {item.text}
+                    </span>
+                  </div>
                 ) : (
                   <Link
                     to={item.link}
@@ -157,6 +177,12 @@ const Sidebar: React.FC = () => {
       <NotificationPanel
         isOpen={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
+      />
+
+      {/* Create Post Modal */}
+      <CreatePostModal
+        isOpen={isCreatePostModalOpen}
+        onClose={() => setIsCreatePostModalOpen(false)}
       />
 
       {/* Mobile Bottom Bar */}
