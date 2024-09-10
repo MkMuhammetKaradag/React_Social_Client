@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { useQuery } from '@apollo/client';
 import AuthReducer from './slices/AuthSlice';
+import ExplorePostsReducer from './slices/ExplorePostsSlice';
 import AppReducer from './slices/AppSlice';
 import { GET_ME } from '../graphql/queries/GetMe';
 
@@ -37,6 +38,7 @@ const ReduxProvider: React.FC<ReduxProviderProps> = ({ children }) => {
     const reducer = {
       auth: AuthReducer,
       app: AppReducer,
+      explorePosts: ExplorePostsReducer,
     };
 
     return configureStore({
@@ -50,11 +52,14 @@ const ReduxProvider: React.FC<ReduxProviderProps> = ({ children }) => {
         app: {
           searchText: '',
         },
+        explorePosts: {
+          posts: [],
+        },
       },
     });
   }, [data, loading, error]);
 
-  if (loading && showLoading  ) {
+  if (loading && showLoading) {
     return <Loading />;
   }
 

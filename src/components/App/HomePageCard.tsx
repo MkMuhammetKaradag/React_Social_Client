@@ -17,6 +17,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CREATE_COMMENT } from '../../graphql/mutations/CreateComment';
+import { Link, useLocation } from 'react-router-dom';
 
 type HomePageCardProps = {
   post: Post;
@@ -34,6 +35,7 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
   const [addLike] = useMutation(ADD_LIKE_POST);
   const [createComment] = useMutation(CREATE_COMMENT);
   const [removeLike] = useMutation(REMOVE_LIKE_POST);
+  const location = useLocation();
 
   const {
     register,
@@ -233,7 +235,9 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
           }}
           className="text-xs cursor-pointer text-gray-500 mt-2"
         >
-          {commentCount} yorumun tümünü gör
+          <Link to={`/p/${post._id}`} state={{ backgroundLocation: location }}>
+            {commentCount} yorumun tümünü gör
+          </Link>
         </div>
         <form
           onSubmit={handleSubmit(handleComment)}
