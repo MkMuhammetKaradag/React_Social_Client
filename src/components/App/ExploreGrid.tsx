@@ -100,7 +100,7 @@ const ExploreGrid: React.FC = () => {
     },
   });
 
-  if (loading) return <p>Yükleniyor...</p>;
+  // if (loading) return <p>Yükleniyor...</p>;
   if (error) return <p>Hata oluştu: {error.message}</p>;
   if (!data) return <p>Veri bulunamadı</p>;
 
