@@ -13,18 +13,56 @@ import { Post } from '../../pages/App/HomePage';
 import { useMutation } from '@apollo/client';
 import { ADD_LIKE_POST } from '../../graphql/mutations/AddLikePost';
 import { REMOVE_LIKE_POST } from '../../graphql/mutations/RemoveLikePost';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CREATE_COMMENT } from '../../graphql/mutations/CreateComment';
 
 type HomePageCardProps = {
   post: Post;
 };
-
+const formSchema = z.object({
+  comment: z.string().min(3, 'comment en az 3 karakter uzunluğunda olmalıdır'),
+});
+type CommentSchema = z.infer<typeof formSchema>;
 const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [mediaError, setMediaError] = useState(false);
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [commentCount, setCommentCount] = useState(post.commentCount);
   const [addLike] = useMutation(ADD_LIKE_POST);
+  const [createComment] = useMutation(CREATE_COMMENT);
   const [removeLike] = useMutation(REMOVE_LIKE_POST);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    watch,
+  } = useForm<CommentSchema>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const handleComment = async (data: CommentSchema) => {
+    await createComment({
+      variables: {
+        input: {
+          postId: post._id,
+          content: data.comment,
+        },
+      },
+    })
+      .then((res) => {
+        setCommentCount((prev) => prev + 1);
+        reset();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const nextMedia = () => {
     setCurrentMediaIndex((prevIndex) =>
       prevIndex === post.media.length - 1 ? 0 : prevIndex + 1
@@ -189,20 +227,37 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
         <div className="text-sm">
           <span className="font-bold">{likeCount} beğenme</span>
         </div>
-        <div className="text-xs text-gray-500 mt-2">
-          {post.commentCount} yorumun tümünü gör
+        <div
+          onClick={() => {
+            console.log('get post id', post._id);
+          }}
+          className="text-xs cursor-pointer text-gray-500 mt-2"
+        >
+          {commentCount} yorumun tümünü gör
         </div>
-        <div className="mt-2 flex items-center border-t pt-2">
+        <form
+          onSubmit={handleSubmit(handleComment)}
+          className="mt-2 flex items-center border-t pt-2"
+        >
           <AiOutlineSmile size={24} />
           <input
+            {...register('comment')}
             type="text"
             placeholder="Yorum ekle..."
             className="ml-2 flex-grow text-sm outline-none"
           />
-          <button className="text-blue-500 font-semibold text-sm">
+          <button
+            disabled={watch('comment')?.length < 3}
+            className={`${
+              watch('comment')?.length < 3 ? 'opacity-0' : 'opacity-100'
+            } text-blue-500 font-semibold text-sm transition-opacity duration-500`}
+          >
             Paylaş
           </button>
-        </div>
+        </form>
+        {errors.comment?.message && (
+          <p className="mt-1 text-sm text-red-500">{errors.comment.message}</p>
+        )}
       </div>
     </div>
   );
