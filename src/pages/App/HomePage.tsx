@@ -7,7 +7,7 @@ import { GET_HOMA_PAGE_POSTS } from '../../graphql/queries/GetPostsFromFollowedU
 import HomePageCard from '../../components/App/HomePageCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-interface PostUser {
+export interface PostUser {
   _id: string;
   firstName: string;
   lastName: string;

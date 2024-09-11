@@ -7,10 +7,12 @@ export const GET_POST = gql`
       tags
       createdAt
       commentCount
+      isLiked
       likeCount
       user {
         _id
         firstName
+        lastName
         profilePhoto
       }
       media {
