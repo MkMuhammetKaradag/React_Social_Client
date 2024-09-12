@@ -5,6 +5,7 @@ import { GrGrid } from 'react-icons/gr';
 import { GET_USER_PROFILE } from '../../graphql/queries/GetUserProfile';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../context/hooks';
+import UserPostsGrid from '../../components/App/UserPostsGrid';
 
 interface ProfileData {
   _id: string;
@@ -143,10 +144,6 @@ const Stories: React.FC = () => (
   </div>
 );
 
-const PostGrid: React.FC = () => (
-  <div className="grid grid-cols-3 gap-1">posts</div>
-);
-
 const TabBar: React.FC<{
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -200,7 +197,11 @@ const ProfilePage: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'posts':
-        return profileData.restricted ? <div>non post</div> : <PostGrid />;
+        return profileData.restricted ? (
+          <div>non post</div>
+        ) : (
+          <UserPostsGrid userId={profileData._id}></UserPostsGrid>
+        );
       case 'reels':
         return <ReelsGrid />;
       default:
