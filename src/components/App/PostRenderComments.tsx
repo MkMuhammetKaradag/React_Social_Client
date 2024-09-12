@@ -3,7 +3,7 @@ import { BiHeart, BiSend } from 'react-icons/bi';
 import { FiMessageCircle } from 'react-icons/fi';
 import { LuBookMarked } from 'react-icons/lu';
 import CommentForm from './CommentForm';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GET_POST_COMMENTS } from '../../graphql/queries/GetPostComments';
 import { CREATE_COMMENT_SUBSCRIPTION } from '../../graphql/subscriptions/CreateComment';
 import { PostUser } from '../../pages/App/HomePage';
@@ -14,6 +14,8 @@ import {
   AiOutlineShareAlt,
 } from 'react-icons/ai';
 import { RiBookmarkLine } from 'react-icons/ri';
+import { REMOVE_LIKE_POST } from '../../graphql/mutations/RemoveLikePost';
+import { ADD_LIKE_POST } from '../../graphql/mutations/AddLikePost';
 interface PostRenderCommentsProps {
   postId: string;
   isLiked: boolean;
@@ -34,6 +36,8 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
 }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [postIsLiked, setPostIsLiked] = useState(isLiked);
+  const [postLikeCount, setPostLikeCount] = useState(likeCount);
   const [extraPassValue, setExtraPassValue] = useState(0);
   const pageSize = 10;
   const {
@@ -52,9 +56,10 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       },
     },
   });
+  const [removeLike] = useMutation(REMOVE_LIKE_POST);
+  const [addLike] = useMutation(ADD_LIKE_POST);
 
   useEffect(() => {
-    // Yeni ürünler eklendiğinde listeyi güncellemek için subscribeToMore'u kullanın
     const unsubscribe = subscribeToMore({
       document: CREATE_COMMENT_SUBSCRIPTION,
       variables: {
@@ -117,35 +122,33 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
     });
   };
   const addLikePost = () => {
-    console.log('liked');
-
-    // addLike({
-    //   variables: {
-    //     postId: post._id,
-    //   },
-    // })
-    //   .then((res) => {
-    //     setLikeCount((prev) => prev + 1);
-    //     setIsLiked(true);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
+    addLike({
+      variables: {
+        postId: postId,
+      },
+    })
+      .then((res) => {
+        setPostLikeCount((prev) => prev + 1);
+        setPostIsLiked(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
   const removeLikePost = () => {
     console.log('unliked');
-    // removeLike({
-    //   variables: {
-    //     postId: post._id,
-    //   },
-    // })
-    //   .then((res) => {
-    //     setLikeCount((prev) => prev - 1);
-    //     setIsLiked(false);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
+    removeLike({
+      variables: {
+        postId: postId,
+      },
+    })
+      .then((res) => {
+        setPostLikeCount((prev) => prev - 1);
+        setPostIsLiked(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
   if (loadingComments && page === 1) return <p>Loading...</p>;
   if (errorComments) return <p>Hata oluştu: {errorComments.message}</p>;
@@ -162,7 +165,7 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
         <div className="w-full bg-white border-b p-4 z-10">
           <div className="flex items-center">
             <img
-              src={postUser.profilePhoto || 'sdsd'}
+              src={postUser.profilePhoto || 'https://via.placeholder.com/40'}
               alt="User"
               className="w-10 h-10 rounded-full mr-3"
             />
@@ -175,13 +178,20 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       </div>
       <div className="flex-grow overflow-y-auto ">
         {/* Comments */}
-        <div className="bg-white p-4">
+        <div className=" p-4">
           {comments.map((comment, i) => (
-            <div key={comment._id} className="mb-3">
-              <span className="font-semibold mr-2">
-                user{comment.user.firstName}
+            <div key={comment._id} className="mb-3 flex ">
+              <img
+                src={postUser.profilePhoto || 'https://via.placeholder.com/40'}
+                alt="User"
+                className="w-10 h-10 rounded-full mr-2"
+              />
+              <span className="mr-1">
+                <span className="font-bold">
+                  {comment.user.firstName + ' ' + comment.user.lastName}
+                </span>{' '}
+                {comment.content}
               </span>
-              <span>This is a sample comment {comment.content}</span>
             </div>
           ))}
           <div
@@ -197,10 +207,10 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       <div className="flex-shrink-0 px-1 flex justify-between mb-4">
         <div className="flex space-x-4">
           <button
-            onClick={!isLiked ? addLikePost : removeLikePost}
+            onClick={!postIsLiked ? addLikePost : removeLikePost}
             className="transition-transform duration-300 ease-in-out transform"
           >
-            {!isLiked ? (
+            {!postIsLiked ? (
               <AiOutlineHeart
                 size={24}
                 className=" hover:text-gray-500 transform scale-100 hover:scale-110 transition-transform duration-300 ease-in-out"

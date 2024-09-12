@@ -157,10 +157,12 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
             src={post.user.profilePhoto || 'https://via.placeholder.com/40'}
             alt="Profile"
           />
-          <div className="ml-3">
-            <span className="text-sm font-semibold">
-              {post.user.firstName + ' ' + post.user.lastName}
-            </span>
+          <div className="ml-3 ">
+            <Link to={`user/${post.user._id}`}>
+              <span className="text-sm font-semibold">
+                {post.user.firstName + ' ' + post.user.lastName}
+              </span>
+            </Link>
           </div>
           <button className="ml-auto text-gray-500">
             <AiOutlineMore size={24} />
