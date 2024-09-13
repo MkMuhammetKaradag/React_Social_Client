@@ -170,7 +170,7 @@ const Sidebar: React.FC = () => {
       {/* Search Panel */}
       <SearchPanel
         isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
+        onClose={toggleSearch}
       />
 
       {/* Notification Panel */}

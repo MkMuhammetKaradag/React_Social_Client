@@ -100,7 +100,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => {
                   alt="User"
                   className="rounded-full mr-2"
                 />
-                <Link to={`user/${user._id}`}>
+                <Link onClick={onClose} to={`user/${user._id}`}>
                   <p className="font-bold">{user.userName}</p>
                   <p className="text-sm text-gray-400">
                     {user.followingCount} Takipçi

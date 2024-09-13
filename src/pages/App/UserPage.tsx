@@ -9,6 +9,7 @@ import UserPostsGrid from '../../components/App/UserPostsGrid';
 
 interface ProfileData {
   _id: string;
+  chatId: string | null;
   profilePhoto: string | null;
   firstName: string;
   lastName: string;
@@ -19,32 +20,6 @@ interface ProfileData {
   isFollowing: boolean;
   restricted: boolean;
 }
-
-// const profileData: ProfileData = {
-//   username: 'enniyifiyat',
-//   //   posts: 933,
-//   followers: 26600,
-//   following: 288,
-//   bio: 'Reklam ve işbirliği için iletişime geç 📩\ntest linkimiz ⬇️',
-//   profilePicture: '/api/placeholder/100/100',
-//   stories: [
-//     { name: 'Reels', image: '/api/placeholder/60/60' },
-//     { name: 'Hepsiburadal...', image: '/api/placeholder/60/60' },
-//     { name: 'Şokaktüel', image: '/api/placeholder/60/60' },
-//     { name: 'Annebebeklink', image: '/api/placeholder/60/60' },
-//     { name: 'Uşapolo', image: '/api/placeholder/60/60' },
-//     { name: 'Elektronik Eşya', image: '/api/placeholder/60/60' },
-//     { name: 'mutfak Link', image: '/api/placeholder/60/60' },
-//   ],
-//   posts: [
-//     { image: '/api/placeholder/300/300' },
-//     { image: '/api/placeholder/300/300' },
-//     { image: '/api/placeholder/300/300' },
-//     { image: '/api/placeholder/300/300' },
-//     { image: '/api/placeholder/300/300' },
-//     { image: '/api/placeholder/300/300' },
-//   ],
-// };
 
 const ProfileHeader: React.FC<{ data: ProfileData }> = ({ data }) => {
   const navigate = useNavigate();
@@ -62,6 +37,7 @@ const ProfileHeader: React.FC<{ data: ProfileData }> = ({ data }) => {
           firstName={data.firstName}
           restricted={data.restricted}
           isFollowing={data.isFollowing}
+          chatId={data.chatId}
         ></ProfileActions>
         <div className="flex space-x-6">
           <div className="text-center flex space-x-1 items-center">
@@ -116,7 +92,8 @@ const ProfileActions: React.FC<{
   firstName: string;
   restricted: boolean;
   isFollowing: boolean;
-}> = ({ firstName, restricted, isFollowing, userId }) => {
+  chatId: string | null;
+}> = ({ firstName, restricted, isFollowing, userId, chatId }) => {
   const user = useAppSelector((s) => s.auth.user);
 
   return (
@@ -127,11 +104,10 @@ const ProfileActions: React.FC<{
           <button className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded">
             {isFollowing ? 'Takiptesin' : 'Takipet'}
           </button>
-          {!restricted && (
-            <button className="flex bg-slate-100 text-black font-semibold py-1  px-2 rounded">
-              Mesaj Gönder
-            </button>
-          )}
+
+          <button className="flex bg-slate-100 text-black font-semibold py-1  px-2 rounded">
+            {chatId ? 'Mesaj Gönder' : 'chat oluştur'}
+          </button>
         </>
       )}
     </div>
