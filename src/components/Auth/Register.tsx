@@ -21,7 +21,12 @@ const formSchema = z
   .object({
     email: z.string().email('Geçerli bir e-posta adresi giriniz'),
     firstName: z.string().min(2, 'Ad en az 2 karakter uzunluğunda olmalıdır'),
+    userName: z
+      .string()
+      .min(3, 'userName en az 2 karakter uzunluğunda olmalıdır')
+      .max(20, 'max 20 karakter'),
     lastName: z.string().min(2, 'Soyad en az 2 karakter uzunluğunda olmalıdır'),
+
     password: z.string().min(8, 'Şifre en az 8 karakter uzunluğunda olmalıdır'),
     confirmPassword: z
       .string()
@@ -95,25 +100,33 @@ const Register: React.FC<RegisterProps> = ({ setActiveState }) => {
           register={register}
           error={errors.email?.message}
         />
+        <div className="flex">
+          <InputField
+            label="Adınız"
+            name="firstName"
+            type="text"
+            placeholder="Adınız"
+            register={register}
+            error={errors.firstName?.message}
+          />
 
+          <InputField
+            label="Soyadınız"
+            name="lastName"
+            type="text"
+            placeholder="Soyadınız"
+            register={register}
+            error={errors.lastName?.message}
+          />
+        </div>
         <InputField
-          label="Adınız"
-          name="firstName"
+          label="Kullanıcı adınız "
+          name="userName"
           type="text"
-          placeholder="Adınız"
+          placeholder="Kullanıcı Adınız"
           register={register}
-          error={errors.firstName?.message}
+          error={errors.userName?.message}
         />
-
-        <InputField
-          label="Soyadınız"
-          name="lastName"
-          type="text"
-          placeholder="Soyadınız"
-          register={register}
-          error={errors.lastName?.message}
-        />
-
         <PasswordField
           label="Şifreniz"
           name="password"

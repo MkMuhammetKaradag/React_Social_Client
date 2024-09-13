@@ -16,7 +16,7 @@ const SlidingPanel: React.FC<SlidingPanelProps> = ({
 }) => {
   return (
     <div
-      className={`fixed ml-16 top-0 ${position}-0 h-full w-80 bg-gray-900 text-white p-4 transition-all duration-500 transform ${
+      className={`fixed ml-16 top-0 ${position}-0 h-full flex flex-col w-80 bg-gray-900 text-white p-4 transition-all duration-500 transform ${
         isOpen
           ? 'translate-x-0'
           : position === 'left'

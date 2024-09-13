@@ -49,6 +49,7 @@ const Login: FC<LoginProps> = ({ setActiveState }) => {
       const result = await login({
         variables: { input: data },
       });
+      window.location.reload();
       dispatch(setUser(result.data.loginUser.user));
       reset();
     } catch (error) {

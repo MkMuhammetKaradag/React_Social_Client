@@ -51,6 +51,10 @@ const HomePage = () => {
         pageSize: pageSize,
       },
     },
+    onCompleted: (data) => {
+      if (data.getPostsFromFollowedUsers.length === 0) setHasMore(false);
+      if (data.getPostsFromFollowedUsers.length < pageSize) setHasMore(false);
+    },
   });
 
   const loadMore = () => {
@@ -86,7 +90,7 @@ const HomePage = () => {
 
   if (loading && page === 1) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
-
+  console.log(data?.getPostsFromFollowedUsers);
   return (
     <div className="grid md:grid-cols-4 sm:grid-cols-3">
       <div className="col-span-3 justify-center">
