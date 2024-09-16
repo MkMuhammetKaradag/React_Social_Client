@@ -34,7 +34,7 @@ const AppNavigator: React.FC = () => {
                 </div>
               }
             />
-            <Route path=":chatId" element={<ChatWindow />} />
+            <Route path="t/:chatId" element={<ChatWindow />} />
           </Route>
         </Routes>
         {/* Eğer modal açılacaksa bu blok devreye girer */}
