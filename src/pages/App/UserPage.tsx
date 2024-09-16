@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 import { BiBookmark, BiCamera, BiFilm, BiSolidUser } from 'react-icons/bi';
 import { GrGrid } from 'react-icons/gr';
@@ -6,6 +6,9 @@ import { GET_USER_PROFILE } from '../../graphql/queries/GetUserProfile';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../context/hooks';
 import UserPostsGrid from '../../components/App/UserPostsGrid';
+import { FOLLOW_USER } from '../../graphql/mutations/FollowUser';
+import { UN_FOLLOW_USER } from '../../graphql/mutations/UnFollowUser';
+import { CREATE_CHAT } from '../../graphql/mutations/CreateChat';
 
 interface ProfileData {
   _id: string;
@@ -96,16 +99,72 @@ const ProfileActions: React.FC<{
 }> = ({ firstName, restricted, isFollowing, userId, chatId }) => {
   const user = useAppSelector((s) => s.auth.user);
 
+  const [followUser] = useMutation(FOLLOW_USER);
+  const [unFollowUser] = useMutation(UN_FOLLOW_USER);
+  const [createChat] = useMutation(CREATE_CHAT);
+
+  const followUserHandele = () => {
+    followUser({
+      variables: {
+        targetUserId: userId,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const unFollowUserHandele = () => {
+    unFollowUser({
+      variables: {
+        targetUserId: userId,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const createChatHandele = () => {
+    createChat({
+      variables: {
+        participantIds: [userId],
+      },
+    })
+      .then(({ data }) => {
+        console.log(data.createChat._id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getChatPage = () => {
+    console.log('get chat page');
+  };
+
   return (
     <div className="flex space-x-5  mb-4 items-center">
       <div>{firstName}</div>
       {userId != user?._id && (
         <>
-          <button className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded">
+          <button
+            onClick={!isFollowing ? followUserHandele : unFollowUserHandele}
+            className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded hover:bg-slate-200"
+          >
             {isFollowing ? 'Takiptesin' : 'Takipet'}
           </button>
 
-          <button className="flex bg-slate-100 text-black font-semibold py-1  px-2 rounded">
+          <button
+            onClick={chatId ? getChatPage : createChatHandele}
+            className="flex bg-slate-100 text-black font-semibold py-1  px-2 rounded hover:bg-slate-200"
+          >
             {chatId ? 'Mesaj Gönder' : 'chat oluştur'}
           </button>
         </>

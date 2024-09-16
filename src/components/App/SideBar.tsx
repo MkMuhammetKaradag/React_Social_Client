@@ -30,7 +30,7 @@ const menuItems: MenuItem[] = [
 
   { icon: AiFillCompass, text: 'Keşfet', link: '/explore' },
   { icon: AiFillVideoCamera, text: 'Reels', link: '/reels' },
-  { icon: AiFillMessage, text: 'Mesajlar', link: '/messages' },
+  { icon: AiFillMessage, text: 'Mesajlar', link: '/direct' },
   { icon: AiFillHeart, text: 'Bildirimler', link: '/notifications' },
   { icon: AiOutlinePlusSquare, text: 'Oluştur', link: '/create' },
   { icon: AiOutlineUser, text: 'Profil', link: '/profile' },
@@ -168,10 +168,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Search Panel */}
-      <SearchPanel
-        isOpen={isSearchOpen}
-        onClose={toggleSearch}
-      />
+      <SearchPanel isOpen={isSearchOpen} onClose={toggleSearch} />
 
       {/* Notification Panel */}
       <NotificationPanel
