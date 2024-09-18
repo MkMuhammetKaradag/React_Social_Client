@@ -1,5 +1,5 @@
 // src/navigations/AppNavigator.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import HomePage, { Post } from '../../pages/App/HomePage';
 import AppLayout from '../AppLayout';
@@ -32,10 +32,13 @@ const IncomingCallListener = () => {
 
   const navigate = useNavigate();
   const location = useLocation(); // Mevcut konumu al
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (data?.videoCallStarted) {
       const { userName, chatId } =
         data.videoCallStarted as VideoCallStartedNotification;
+      // Sesi çalmaya çalış
 
       // Eğer kullanıcı zaten bir arama sayfasındaysa, bildirimi gösterme
       // if (location.pathname.startsWith('/call/')) {
@@ -44,7 +47,7 @@ const IncomingCallListener = () => {
       //   );
       //   return;
       // }
-      toast.info(
+      const toastId = toast.info(
         <div className="p-2 ">
           <div>Incoming call from {userName}</div>
           <div>
@@ -70,11 +73,26 @@ const IncomingCallListener = () => {
           draggable: true,
         }
       );
+
+      timerRef.current = setTimeout(() => {
+        handleRejectCall();
+        toast.dismiss(toastId);
+      }, 10000);
     }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, [data]);
 
   const handleAcceptCall = (chatId: string) => {
-    console.log('Call accepted for chat:');
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    // Ses çalmayı durdur
+
     navigate(`/call/${chatId}`, {
       state: { backgroundLocation: location }, // Mevcut konumu backgroundLocation olarak gönder
     });
@@ -83,7 +101,10 @@ const IncomingCallListener = () => {
   };
 
   const handleRejectCall = () => {
-    console.log('Call rejected for chat:');
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
     toast.dismiss();
   };
 

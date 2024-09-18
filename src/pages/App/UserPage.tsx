@@ -9,6 +9,7 @@ import UserPostsGrid from '../../components/App/UserPostsGrid';
 import { FOLLOW_USER } from '../../graphql/mutations/FollowUser';
 import { UN_FOLLOW_USER } from '../../graphql/mutations/UnFollowUser';
 import { CREATE_CHAT } from '../../graphql/mutations/CreateChat';
+import { GET_USER_CHATS } from '../../graphql/queries/GetUserChats';
 
 interface ProfileData {
   _id: string;
@@ -98,10 +99,13 @@ const ProfileActions: React.FC<{
   chatId: string | null;
 }> = ({ firstName, restricted, isFollowing, userId, chatId }) => {
   const user = useAppSelector((s) => s.auth.user);
-
+  const navigate = useNavigate();
   const [followUser] = useMutation(FOLLOW_USER);
   const [unFollowUser] = useMutation(UN_FOLLOW_USER);
-  const [createChat] = useMutation(CREATE_CHAT);
+  const [createChat] = useMutation(CREATE_CHAT, {
+    refetchQueries: [{ query: GET_USER_CHATS }],
+    awaitRefetchQueries: true,
+  });
 
   const followUserHandele = () => {
     followUser({
@@ -138,7 +142,7 @@ const ProfileActions: React.FC<{
       },
     })
       .then(({ data }) => {
-        console.log(data.createChat._id);
+        navigate(`/direct/t/${data.createChat._id}`);
       })
       .catch((error) => {
         console.log(error);
