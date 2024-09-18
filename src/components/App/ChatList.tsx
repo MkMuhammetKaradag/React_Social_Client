@@ -43,7 +43,7 @@ const ChatList: React.FC = () => {
       <ul>
         {chats.map((chat) => (
           <li key={chat._id}>
-            <Link to={`/direct/t/${chat._id}`} className={`block p-4  `}>
+            <Link to={`/direct/t/${chat._id}`} className={`block p-1 mb-3  `}>
               <ChatParticipantCard
                 participants={chat.participants}
                 status={chat._id === chatId}

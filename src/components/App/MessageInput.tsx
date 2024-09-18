@@ -4,14 +4,10 @@ import { ADD_LIKE_POST } from '../../graphql/mutations/AddLikePost';
 import { ADD_MESSAGE_TO_CHAT } from '../../graphql/mutations/AddMessageToChat';
 
 interface MessageInputProps {
-  onSendMessage: (content: string) => void;
   chatId: string;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({
-  onSendMessage,
-  chatId,
-}) => {
+const MessageInput: React.FC<MessageInputProps> = ({ chatId }) => {
   const [message, setMessage] = useState<string>('');
   const [createMessage] = useMutation(ADD_MESSAGE_TO_CHAT);
   const handleSend = async () => {
@@ -26,7 +22,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       })
         .then((res) => {
           console.log(res);
-          onSendMessage(message.trim());
+          // onSendMessage(message.trim());
           setMessage('');
         })
         .catch((err) => {

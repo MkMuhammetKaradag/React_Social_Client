@@ -1,5 +1,5 @@
 // src/navigations/AppNavigator.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import HomePage, { Post } from '../../pages/App/HomePage';
 import AppLayout from '../AppLayout';
@@ -11,6 +11,84 @@ import FollowersAndFollowingPage from '../../pages/App/FollowersAndFollowingPage
 import ChatList from '../../components/App/ChatList';
 import ChatWindow from '../../pages/App/ChatWindow';
 import DirectPage from '../../pages/App/DirectPage';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import { useSubscription } from '@apollo/client';
+import { VIDEO_CALL_STARTED } from '../../graphql/subscriptions/StartVideoCall';
+import { useAppSelector } from '../../context/hooks';
+import VideoCallPage from '../../pages/App/VideoCallPage';
+interface VideoCallStartedNotification {
+  userName: string;
+  chatId: string;
+}
+
+const IncomingCallListener = () => {
+  const user = useAppSelector((s) => s.auth.user);
+  const { data } = useSubscription(VIDEO_CALL_STARTED, {
+    variables: {
+      userId: user?._id,
+    },
+  });
+
+  const navigate = useNavigate();
+  const location = useLocation(); // Mevcut konumu al
+  useEffect(() => {
+    if (data?.videoCallStarted) {
+      const { userName, chatId } =
+        data.videoCallStarted as VideoCallStartedNotification;
+
+      // Eğer kullanıcı zaten bir arama sayfasındaysa, bildirimi gösterme
+      // if (location.pathname.startsWith('/call/')) {
+      //   console.log(
+      //     'User is already in a call, ignoring incoming call notification'
+      //   );
+      //   return;
+      // }
+      toast.info(
+        <div className="p-2 ">
+          <div>Incoming call from {userName}</div>
+          <div>
+            <button
+              className="bg-green-400 p-3 hover:bg-green-500"
+              onClick={() => handleAcceptCall(chatId)}
+            >
+              Accept
+            </button>
+            <button
+              className="bg-red-400 p-3 hover:bg-red-500"
+              onClick={() => handleRejectCall()}
+            >
+              Reject
+            </button>
+          </div>
+        </div>,
+        {
+          position: 'top-right',
+          autoClose: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
+    }
+  }, [data]);
+
+  const handleAcceptCall = (chatId: string) => {
+    console.log('Call accepted for chat:');
+    navigate(`/call/${chatId}`, {
+      state: { backgroundLocation: location }, // Mevcut konumu backgroundLocation olarak gönder
+    });
+    toast.dismiss();
+    // Örneğin: history.push(`/chat/${chatId}`);
+  };
+
+  const handleRejectCall = () => {
+    console.log('Call rejected for chat:');
+    toast.dismiss();
+  };
+
+  return null; // Bu bileşen herhangi bir UI render etmez
+};
 
 const AppNavigator: React.FC = () => {
   const location = useLocation();
@@ -20,6 +98,8 @@ const AppNavigator: React.FC = () => {
   return (
     <AppLayout>
       <>
+        <ToastContainer />
+        <IncomingCallListener />
         <Routes location={state?.backgroundLocation || location}>
           <Route path="/" element={<HomePage />} />
           <Route path="/explore" element={<ExplorePage />} />
@@ -44,6 +124,10 @@ const AppNavigator: React.FC = () => {
             <Route
               path="/user/:userId/:segment"
               element={<FollowersAndFollowingPage />}
+            />
+            <Route
+              path="/call/:chatId"
+              element={<VideoCallPage></VideoCallPage>}
             />
           </Routes>
         )}

@@ -17,10 +17,9 @@ interface Message {
 
 interface MessagesProps {
   chatId: string;
-  onSendMessage: (content: string) => void;
 }
 
-const Messages: React.FC<MessagesProps> = ({ chatId, onSendMessage }) => {
+const Messages: React.FC<MessagesProps> = ({ chatId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
