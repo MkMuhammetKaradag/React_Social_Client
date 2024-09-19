@@ -12,6 +12,7 @@ interface CreatePostModalProps {
 }
 interface SignUrlInput {
   publicId: string;
+  folder: string;
 }
 interface SignedUrlData {
   getSignedUploadUrl: {
@@ -55,7 +56,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const uploadToCloudinary = async (file: File) => {
     const publicId = `post_${Date.now()}`;
     const { data } = await getSignedUrl({
-      variables: { input: { publicId } },
+      variables: { input: { publicId, folder: 'posts' } },
     });
 
     if (!data) {

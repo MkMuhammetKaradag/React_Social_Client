@@ -46,7 +46,7 @@ const PostPage: React.FC = () => {
   const location = useLocation();
 
   const postsIds =
-    location.state?.backgroundLocation.pathname == '/explore'
+    location.state?.backgroundLocation.pathname != '/'
       ? useAppSelector((s) => s.explorePosts.posts)
       : [];
   const handleClose = () => {

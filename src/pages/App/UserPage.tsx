@@ -10,6 +10,9 @@ import { FOLLOW_USER } from '../../graphql/mutations/FollowUser';
 import { UN_FOLLOW_USER } from '../../graphql/mutations/UnFollowUser';
 import { CREATE_CHAT } from '../../graphql/mutations/CreateChat';
 import { GET_USER_CHATS } from '../../graphql/queries/GetUserChats';
+import { GET_SIGNED_URL } from '../../graphql/mutations/getSignedUrl';
+import axios from 'axios';
+import { UPLOAD_PROFILEPHOTO } from '../../graphql/mutations/UploadProfilePhoto';
 
 interface ProfileData {
   _id: string;
@@ -24,25 +27,156 @@ interface ProfileData {
   isFollowing: boolean;
   restricted: boolean;
 }
+interface SignedUrlData {
+  getSignedUploadUrl: {
+    signature: string;
+    timestamp: number;
+    cloudName: string;
+    apiKey: string;
+  };
+}
+
+interface SignUrlInput {
+  publicId: string;
+  folder: string;
+}
+const ProfileaUploadImage: React.FC<{ data: ProfileData }> = ({ data }) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const [getSignedUrl] = useMutation<SignedUrlData, { input: SignUrlInput }>(
+    GET_SIGNED_URL
+  );
+  const [uploadProfilePhoto] = useMutation(UPLOAD_PROFILEPHOTO);
+
+  const uploadToCloudinary = async (file: File) => {
+    const publicId = `user_${Date.now()}`;
+    const { data } = await getSignedUrl({
+      variables: { input: { publicId, folder: 'profilePhotos' } },
+    });
+
+    if (!data) {
+      throw new Error('Failed to get signed URL');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('api_key', data.getSignedUploadUrl.apiKey);
+    formData.append('timestamp', data.getSignedUploadUrl.timestamp.toString());
+    formData.append('signature', data.getSignedUploadUrl.signature);
+    formData.append('public_id', publicId);
+    formData.append('folder', 'profilePhotos');
+
+    try {
+      const response = await axios.post<{ secure_url: string }>(
+        `https://api.cloudinary.com/v1_1/${data.getSignedUploadUrl.cloudName}/auto/upload`,
+        formData
+      );
+      let transformedUrl = response.data.secure_url;
+      // if (file.type.startsWith('image/')) {
+      //   transformedUrl = transformedUrl.replace(
+      //     '/upload/',
+      //     '/upload/c_fill,w_128,h_128/'
+      //   );
+      // }
+      return { url: transformedUrl, publicId };
+    } catch (error) {
+      throw new Error('sdsdsd');
+    }
+  };
+
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+      const uploadimage = await uploadToCloudinary(file);
+
+      uploadProfilePhoto({
+        variables: {
+          profilePhoto: uploadimage.url,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  return (
+    <>
+      {selectedImage ? (
+        <img
+          src={selectedImage}
+          alt="Selected"
+          className="w-full h-full rounded-full object-cover"
+        />
+      ) : (
+        <img
+          src={data.profilePhoto || 'https://via.placeholder.com/120'}
+          alt="Placeholder"
+          className="w-full h-full rounded-full object-cover"
+        />
+      )}
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleImageChange}
+      />
+      <button
+        className="absolute"
+        onClick={() => document.getElementById('imageInput')?.click()}
+      >
+        <BiCamera className="text-white" size={40}></BiCamera>
+      </button>
+    </>
+  );
+};
 
 const ProfileHeader: React.FC<{ data: ProfileData }> = ({ data }) => {
+  const user = useAppSelector((s) => s.auth.user);
   const navigate = useNavigate();
   const location = useLocation();
+  console.log(data);
   return (
     <div className="flex items-center p-4">
-      <img
-        src={data.profilePhoto || 'https://via.placeholder.com/90'}
-        alt={data.firstName}
-        className="w-20 h-20 rounded-full"
-      />
+      <div
+        className={` ${
+          user?._id == data._id ? 'relative bg-gray-400 opacity-60' : ''
+        } rounded-full flex items-center w-32 h-32  justify-center `}
+      >
+        {user?._id === data._id ? (
+          <ProfileaUploadImage data={data}></ProfileaUploadImage>
+        ) : (
+          <img
+            src={data.profilePhoto || 'https://via.placeholder.com/120'}
+            alt={data.firstName}
+            className="w-32 h-32 rounded-full"
+          />
+        )}
+      </div>
+
       <div className="flex flex-col  space-y-4 ml-20">
-        <ProfileActions
-          userId={data._id}
-          firstName={data.firstName}
-          restricted={data.restricted}
-          isFollowing={data.isFollowing}
-          chatId={data.chatId}
-        ></ProfileActions>
+        {user?._id === data._id ? (
+          <MyProfileActions
+            userId={data._id}
+            firstName={data.firstName}
+          ></MyProfileActions>
+        ) : (
+          <ProfileActions
+            userId={data._id}
+            firstName={data.firstName}
+            restricted={data.restricted}
+            isFollowing={data.isFollowing}
+            chatId={data.chatId}
+          ></ProfileActions>
+        )}
+
         <div className="flex space-x-6">
           <div className="text-center flex space-x-1 items-center">
             <div className="font-bold">0</div>
@@ -176,7 +310,31 @@ const ProfileActions: React.FC<{
     </div>
   );
 };
+const MyProfileActions: React.FC<{
+  userId: string;
+  firstName: string;
+}> = ({ firstName, userId }) => {
+  const user = useAppSelector((s) => s.auth.user);
 
+  return (
+    <div className="flex space-x-5  mb-4 items-center">
+      <div>{firstName}</div>
+      <button
+        onClick={() => console.log('click')}
+        className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded hover:bg-slate-200"
+      >
+        Profili Düzenle
+      </button>
+
+      <button
+        onClick={() => console.log('click')}
+        className="flex bg-slate-100 text-black font-semibold py-1  px-2 rounded hover:bg-slate-200"
+      >
+        Arşivigör
+      </button>
+    </div>
+  );
+};
 const Stories: React.FC = () => (
   <div className="flex space-x-20 overflow-x-auto px-4 bg-red-300 ">
     stories

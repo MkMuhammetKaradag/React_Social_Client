@@ -153,7 +153,7 @@ const HomePageCard: FC<HomePageCardProps> = ({ post }) => {
       <div className="p-4">
         <div className="flex items-center">
           <img
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
             src={post.user.profilePhoto || 'https://via.placeholder.com/40'}
             alt="Profile"
           />
