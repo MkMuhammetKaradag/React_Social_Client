@@ -15,6 +15,8 @@ import SearchPanel from './SearchPanel';
 import NotificationPanel from './NotificationPanel';
 import CreatePostModal from './CreatePostModal';
 
+import { useAppSelector } from '../../context/hooks';
+
 interface MenuItem {
   icon: IconType;
   text: string;
@@ -31,7 +33,7 @@ const menuItems: MenuItem[] = [
   { icon: AiFillMessage, text: 'Mesajlar', link: '/direct' },
   { icon: AiFillHeart, text: 'Bildirimler', link: '/notifications' },
   { icon: AiOutlinePlusSquare, text: 'Oluştur', link: '/create' },
-  { icon: AiOutlineUser, text: 'Profil', link: '/profile' },
+  { icon: AiOutlineUser, text: 'Profil', link: '/user' },
 ];
 
 const Sidebar: React.FC = () => {
@@ -39,7 +41,9 @@ const Sidebar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+  const user = useAppSelector((s) => s.auth.user);
   const pathname = useLocation().pathname;
+
   const toggleSearch = () => {
     setIsExpanded((prev) => !prev);
     setIsSearchOpen((prev) => !prev);
@@ -133,9 +137,16 @@ const Sidebar: React.FC = () => {
                   </div>
                 ) : (
                   <Link
-                    to={item.link}
+                    to={
+                      item.link == '/user'
+                        ? `${item.link}/${user?._id}`
+                        : item.link
+                    }
                     className={`${
-                      pathname == item.link && 'bg-red-900'
+                      item.link == '/user'
+                        ? pathname == `${item.link}/${user?._id}` &&
+                          'bg-red-900'
+                        : pathname == item.link && 'bg-red-900'
                     } flex items-center hover:bg-gray-900 p-2 rounded transition-all duration-300 ease-in-out overflow-hidden`}
                   >
                     <item.icon className="text-2xl min-w-[1.5rem]" />

@@ -17,6 +17,7 @@ export interface ProfileData extends UserWithFollowStatus {
   followersCount: number;
   followingCount: number;
   restricted: boolean;
+  followRequestIsSent: boolean;
 }
 
 export enum MediaType {

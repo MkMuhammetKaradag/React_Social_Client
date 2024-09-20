@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BiCamera, BiFilm } from 'react-icons/bi';
 import { GrGrid } from 'react-icons/gr';
 import { GET_USER_PROFILE } from '../../graphql/queries/GetUserProfile';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../context/hooks';
 import UserPostsGrid from '../../components/App/UserPostsGrid';
 import { FOLLOW_USER } from '../../graphql/mutations/FollowUser';
@@ -150,6 +150,7 @@ const ProfileHeader: React.FC<{ data: ProfileData }> = ({ data }) => {
             restricted={data.restricted}
             isFollowing={data.isFollowing}
             chatId={data.chatId}
+            followRequestIsSent={data.followRequestIsSent}
           />
         )}
 
@@ -200,19 +201,52 @@ const ProfileActions: React.FC<{
   firstName: string;
   restricted: boolean;
   isFollowing: boolean;
+  followRequestIsSent: boolean;
   chatId: string | null;
-}> = ({ firstName, restricted, isFollowing, userId, chatId }) => {
+}> = ({
+  firstName,
+  restricted,
+  isFollowing,
+  userId,
+  chatId,
+  followRequestIsSent,
+}) => {
   const user = useAppSelector((s) => s.auth.user);
   const navigate = useNavigate();
-  const [followUser] = useMutation(FOLLOW_USER);
-  const [unFollowUser] = useMutation(UN_FOLLOW_USER);
+  const [followUser] = useMutation(FOLLOW_USER, {
+    refetchQueries: [
+      {
+        query: GET_USER_PROFILE,
+        variables: {
+          userId,
+        },
+      },
+    ],
+    awaitRefetchQueries: true,
+  });
+
+  const [unFollowUser] = useMutation(UN_FOLLOW_USER, {
+    refetchQueries: [
+      {
+        query: GET_USER_PROFILE,
+        variables: {
+          userId,
+        },
+      },
+    ],
+    awaitRefetchQueries: true,
+  });
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_USER_CHATS }],
     awaitRefetchQueries: true,
   });
 
   const handleFollowAction = () => {
-    const mutation = isFollowing ? unFollowUser : followUser;
+    const mutation = isFollowing
+      ? unFollowUser
+      : followRequestIsSent
+      ? unFollowUser
+      : followUser;
     mutation({ variables: { targetUserId: userId } })
       .then((res) => console.log(res))
       .catch((error) => console.error(error));
@@ -237,7 +271,13 @@ const ProfileActions: React.FC<{
             onClick={handleFollowAction}
             className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded hover:bg-slate-200"
           >
-            {isFollowing ? 'Takiptesin' : 'Takip et'}
+            {isFollowing
+              ? 'Takiptesin'
+              : restricted
+              ? !followRequestIsSent
+                ? 'Takip isteği'
+                : 'Takipi bırak'
+              : 'Takip et'}
           </button>
           <button
             onClick={handleChatAction}
@@ -257,9 +297,12 @@ const MyProfileActions: React.FC<{ userId: string; firstName: string }> = ({
 }) => (
   <div className="flex space-x-5 mb-4 items-center">
     <div>{firstName}</div>
-    <button className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded hover:bg-slate-200">
+    <Link
+      to={`/accounts/edit`}
+      className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded hover:bg-slate-200"
+    >
       Profili Düzenle
-    </button>
+    </Link>
     <button className="flex bg-slate-100 text-black font-semibold py-1 px-2 rounded hover:bg-slate-200">
       Arşivi Gör
     </button>

@@ -15,6 +15,7 @@ export const GET_USER_PROFILE = gql`
       followingCount
       isFollowing
       restricted
+      followRequestIsSent
     }
   }
 `;
