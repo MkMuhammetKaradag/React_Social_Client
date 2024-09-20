@@ -1,23 +1,29 @@
-import { useMutation } from '@apollo/client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
+import { useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { CREATE_COMMENT } from '../../graphql/mutations/CreateComment';
 import { AiOutlineSmile } from 'react-icons/ai';
+import { CREATE_COMMENT } from '../../graphql/mutations/CreateComment';
+
+// Form şeması
 const formSchema = z.object({
-  comment: z.string().min(3, 'comment en az 3 karakter uzunluğunda olmalıdır'),
+  comment: z.string().min(3, 'Yorum en az 3 karakter uzunluğunda olmalıdır'),
 });
+
 type CommentSchema = z.infer<typeof formSchema>;
+
 interface CommentFormProps {
   postId: string;
 }
+
 const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
   const [createComment] = useMutation(CREATE_COMMENT);
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
     watch,
   } = useForm<CommentSchema>({
@@ -25,26 +31,29 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
   });
 
   const handleComment = async (data: CommentSchema) => {
-    await createComment({
-      variables: {
-        input: {
-          postId,
-          content: data.comment,
+    try {
+      await createComment({
+        variables: {
+          input: {
+            postId,
+            content: data.comment,
+          },
         },
-      },
-    })
-      .then((res) => {
-        reset();
-      })
-      .catch((err) => {
-        console.log(err);
       });
+      reset();
+    } catch (err) {
+      console.error('Yorum oluşturma hatası:', err);
+    }
   };
+
+  const commentLength = watch('comment')?.length ?? 0;
+  const isCommentValid = commentLength >= 3;
+
   return (
     <div className="mb-2 px-1">
       <form
         onSubmit={handleSubmit(handleComment)}
-        className=" flex items-center border-t pt-2"
+        className="flex items-center border-t pt-2"
       >
         <AiOutlineSmile size={24} />
         <input
@@ -54,10 +63,11 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId }) => {
           className="ml-2 flex-grow text-sm outline-none"
         />
         <button
-          disabled={watch('comment')?.length < 3}
-          className={`${
-            watch('comment')?.length < 3 ? 'opacity-0' : 'opacity-100'
-          } text-blue-500 font-semibold text-sm transition-opacity duration-500`}
+          disabled={!isCommentValid}
+          className={`
+            ${isCommentValid ? 'opacity-100' : 'opacity-0'}
+            text-blue-500 font-semibold text-sm transition-opacity duration-500
+          `}
         >
           Paylaş
         </button>

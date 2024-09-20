@@ -9,9 +9,7 @@ import {
 import { Track } from 'livekit-client';
 import React, { useState } from 'react';
 
-// Adjust these imports and types based on your actual library and setup
 
-// Define types for your track references and sources
 
 // Define props interface for the component
 interface VideoAudioLayoutProps {

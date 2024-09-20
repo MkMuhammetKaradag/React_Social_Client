@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BiHeart, BiSend } from 'react-icons/bi';
-import { FiMessageCircle } from 'react-icons/fi';
-import { LuBookMarked } from 'react-icons/lu';
 import CommentForm from './CommentForm';
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_POST_COMMENTS } from '../../graphql/queries/GetPostComments';
 import { CREATE_COMMENT_SUBSCRIPTION } from '../../graphql/subscriptions/CreateComment';
-import { PostUser } from '../../pages/App/HomePage';
+
 import {
   AiFillHeart,
   AiOutlineComment,
@@ -16,17 +13,18 @@ import {
 import { RiBookmarkLine } from 'react-icons/ri';
 import { REMOVE_LIKE_POST } from '../../graphql/mutations/RemoveLikePost';
 import { ADD_LIKE_POST } from '../../graphql/mutations/AddLikePost';
+import { User } from '../../utils/types';
 interface PostRenderCommentsProps {
   postId: string;
   isLiked: boolean;
-  postUser: PostUser;
+  postUser: User;
   likeCount: number;
 }
 
 interface Comment {
   _id: string;
   content: string;
-  user: PostUser;
+  user: User;
 }
 const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
   postId,
@@ -37,7 +35,6 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [postIsLiked, setPostIsLiked] = useState(isLiked);
-  const [postLikeCount, setPostLikeCount] = useState(likeCount);
   const [extraPassValue, setExtraPassValue] = useState(0);
   const pageSize = 10;
   const {
@@ -128,7 +125,7 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       },
     })
       .then((res) => {
-        setPostLikeCount((prev) => prev + 1);
+
         setPostIsLiked(true);
       })
       .catch((e) => {
@@ -143,7 +140,7 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       },
     })
       .then((res) => {
-        setPostLikeCount((prev) => prev - 1);
+     
         setPostIsLiked(false);
       })
       .catch((e) => {
@@ -167,7 +164,7 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
             <img
               src={postUser.profilePhoto || 'https://via.placeholder.com/40'}
               alt="User"
-              className="w-10 h-10 rounded-full mr-3"
+              className="w-10 h-10 rounded-full mr-3 object-cover"
             />
             <span className="font-semibold">
               {postUser.firstName + ' ' + postUser.lastName}
@@ -184,12 +181,10 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
               <img
                 src={postUser.profilePhoto || 'https://via.placeholder.com/40'}
                 alt="User"
-                className="w-10 h-10 rounded-full mr-2"
+                className="w-10 h-10 rounded-full mr-2 object-cover"
               />
               <span className="mr-1">
-                <span className="font-bold">
-                  {comment.user.firstName + ' ' + comment.user.lastName}
-                </span>{' '}
+                <span className="font-bold">{comment.user.userName}</span>{' '}
                 {comment.content}
               </span>
             </div>

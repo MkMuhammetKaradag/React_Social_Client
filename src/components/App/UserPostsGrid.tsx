@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useAppDispatch } from '../../context/hooks';
-import { Link, useLocation } from 'react-router-dom';
+import {  useLocation } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { GET_USER_POSTS } from '../../graphql/queries/GetUserPosts';
 import {
@@ -8,45 +8,14 @@ import {
   setPostsIds,
 } from '../../context/slices/ExplorePostsSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { AiFillHeart, AiOutlineComment } from 'react-icons/ai';
-interface Media {
-  url: string;
-  type: 'IMAGE' | 'VIDEO';
-  publicId: string;
-}
 
-interface Post {
-  _id: string;
-  commentCount: number;
-  likeCount: number;
-  firstMedia: Media;
-}
+import { ExplorePageCardPost } from '../../utils/types';
+import { PostCard } from './ExploreGrid';
+
 interface UserPostsGridProps {
   userId: string;
 }
-const MediaItem: React.FC<{ media: Media }> = ({ media }) => {
-  if (media.type === 'VIDEO') {
-    return (
-      <video
-        src={`https://res.cloudinary.com/doarbqecd/video/upload/c_fill,w_300,h_${'300'}/v1725363937/posts/${
-          media.publicId
-        }`}
-        className="w-full h-full object-cover"
-        autoPlay={false}
-      />
-    );
-  } else {
-    return (
-      <img
-        src={`https://res.cloudinary.com/doarbqecd/image/upload/c_fill,w_300,h_${'300'}/v1725363937/posts/${
-          media.publicId
-        }`}
-        alt=""
-        className="w-full h-full object-cover"
-      />
-    );
-  }
-};
+
 const UserPostsGrid: React.FC<UserPostsGridProps> = ({ userId }) => {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
@@ -64,24 +33,26 @@ const UserPostsGrid: React.FC<UserPostsGridProps> = ({ userId }) => {
     onCompleted: (data) => {
       if (data.getUserPosts.posts) {
         dispatch(
-          setPostsIds(data.getUserPosts.posts.map((post: Post) => post._id))
+          setPostsIds(
+            data.getUserPosts.posts.map((post: ExplorePageCardPost) => post._id)
+          )
         );
+        setHasMore(data.getUserPosts.posts.length === pageSize);
       }
     },
     onError: (error) => {
       console.error('Sorgu sırasında hata oluştu:', error);
     },
   });
-  // if (loading) return <p>Yükleniyor...</p>;
-  if (error) return <p>Hata oluştu: {error.message}</p>;
-  if (!data) return <p>Veri bulunamadı</p>;
-  const posts = data.getUserPosts.posts;
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     fetchMore({
       variables: {
-        page: page + 1,
-        pageSize: pageSize,
+        input: {
+          userId,
+          page: page + 1,
+          pageSize,
+        },
       },
 
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -92,13 +63,17 @@ const UserPostsGrid: React.FC<UserPostsGridProps> = ({ userId }) => {
           setHasMore(false);
           return prev;
         }
-        setPage(page + 1);
+        setPage((prev) => prev + 1);
         dispatch(
           addPostsIds(
-            fetchMoreResult.getUserPosts.posts.map((post: Post) => post._id)
+            fetchMoreResult.getUserPosts.posts.map(
+              (post: ExplorePageCardPost) => post._id
+            )
           )
         );
         setHasMore(fetchMoreResult.getUserPosts.posts.length === pageSize);
+        console.log(page, pageSize);
+        console.log(fetchMoreResult.getUserPosts.posts);
         return {
           getUserPosts: {
             ...prev.getUserPosts,
@@ -110,15 +85,18 @@ const UserPostsGrid: React.FC<UserPostsGridProps> = ({ userId }) => {
         };
       },
     });
-  };
-
+  }, [dispatch, fetchMore, page]);
+  if (loading) return <p>Yükleniyor...</p>;
+  if (error) return <p>Hata oluştu: {error.message}</p>;
+  if (!data) return <p>Veri bulunamadı</p>;
+  const posts = data.getUserPosts.posts;
   return (
     <div>
       <InfiniteScroll
         dataLength={posts.length}
         next={loadMore}
-        hasMore={!(posts.length >= data.getUserPosts.totalCount)}
-        loader={<h4>Yükleniyor...</h4>}
+        hasMore={hasMore}
+        loader={<h4>Loading...</h4>}
         endMessage={
           <p style={{ textAlign: 'center' }}>
             <b>Yay! You have seen it all</b>
@@ -126,34 +104,8 @@ const UserPostsGrid: React.FC<UserPostsGridProps> = ({ userId }) => {
         }
       >
         <div className="grid grid-cols-3 gap-1 md:gap-2">
-          {posts.map((post: Post, index: number) => (
-            <div
-              key={post._id}
-              className={`relative group transition-opacity col-span-1   duration-300 cursor-pointer from-black to-transparent ease-in-out `}
-            >
-              <Link
-                to={`/p/${post._id}`}
-                state={{ backgroundLocation: location }}
-              >
-                {/* <div>{index}</div> */}
-                <MediaItem media={post.firstMedia} />
-                {post.firstMedia.type === 'VIDEO' && (
-                  <span className="absolute top-2 right-2 text-white">---</span>
-                )}
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                  <div className="text-white flex space-x-4">
-                    <span className="flex items-center space-x-1">
-                      <AiFillHeart size={24} />
-                      <span>{post.likeCount}</span>
-                    </span>
-                    <span className="flex items-center space-x-1">
-                      <AiOutlineComment size={24}></AiOutlineComment>
-                      <span>{post.commentCount}</span>
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </div>
+          {posts.map((post: ExplorePageCardPost) => (
+            <PostCard key={post._id} post={post} location={location} />
           ))}
         </div>
       </InfiniteScroll>

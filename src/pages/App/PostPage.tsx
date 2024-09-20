@@ -1,61 +1,92 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { AiOutlineLeft, AiOutlineRight, AiOutlineClose } from 'react-icons/ai';
-
+import { AiOutlineClose } from 'react-icons/ai';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { useAppSelector } from '../../context/hooks';
 import { GET_POST } from '../../graphql/queries/GetPost';
 import { useQuery } from '@apollo/client';
-import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import RenderMedia from '../../components/App/RenderMedia';
-import { BiHeart, BiSend } from 'react-icons/bi';
-import { FiMessageCircle } from 'react-icons/fi';
-import { LuBookMarked } from 'react-icons/lu';
 import PostRenderComments from '../../components/App/PostRenderComments';
-interface User {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  profilePhoto: string;
+import { PostPageCardPost } from '../../utils/types';
+
+interface GetPostData {
+  getPost: PostPageCardPost;
 }
 
-export interface Media {
-  url: string;
-  publicId: string;
-  type: string;
+interface GetPostVars {
+  postId: string;
 }
 
-interface Post {
-  _id: string;
-  title: string;
-  tags: string[];
-  createdAt: string;
-  commentCount: number;
-  isLiked: boolean;
-  likeCount: number;
-  user: User;
-  media: Media[];
-}
+// Components
+const CloseButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
+  <div className="absolute top-0 right-0 justify-end p-4">
+    <button onClick={onClick} className="text-white text-3xl">
+      <AiOutlineClose />
+    </button>
+  </div>
+);
+
+const NavigationButton: React.FC<{
+  onClick: () => void;
+  direction: 'left' | 'right';
+  isHidden: boolean;
+}> = ({ onClick, direction, isHidden }) => (
+  <button
+    onClick={onClick}
+    className={`${isHidden && 'hidden'} absolute ${
+      direction === 'left' ? 'left-2' : 'right-2'
+    } top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2`}
+  >
+    {direction === 'left' ? <BsChevronLeft /> : <BsChevronRight />}
+  </button>
+);
+
+const PostContent: React.FC<{
+  currentPost: PostPageCardPost;
+  postId: string;
+  currentMediaIndex: number;
+  setCurrentMediaIndex: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ currentPost, postId, currentMediaIndex, setCurrentMediaIndex }) => (
+  <div className="bg-white w-full max-w-6xl grid grid-cols-3 h-full md:max-h-[95vh]">
+    <div className="relative h-full max-h-[95vh] md:col-span-2 col-span-3 flex justify-center">
+      <RenderMedia
+        key={postId}
+        media={currentPost.media}
+        currentMediaIndex={currentMediaIndex}
+        setCurrentMediaIndex={setCurrentMediaIndex}
+      />
+    </div>
+    <PostRenderComments
+      isLiked={currentPost.isLiked}
+      likeCount={currentPost.likeCount}
+      postUser={currentPost.user}
+      postId={postId}
+    />
+  </div>
+);
+
+// Main Component
 const PostPage: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
-
-  const { loading, error, data } = useQuery(GET_POST, {
-    variables: { postId },
-  });
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { loading, error, data } = useQuery<GetPostData, GetPostVars>(
+    GET_POST,
+    {
+      variables: { postId: postId || '' },
+    }
+  );
+
   const postsIds =
-    location.state?.backgroundLocation.pathname != '/'
+    location.state?.backgroundLocation.pathname !== '/'
       ? useAppSelector((s) => s.explorePosts.posts)
       : [];
+
   const handleClose = () => {
     const backgroundLocation = location.state?.backgroundLocation;
-    if (backgroundLocation) {
-      navigate(backgroundLocation.pathname || '/', { replace: true });
-    } else {
-      navigate('/');
-    }
+    navigate(backgroundLocation?.pathname || '/', { replace: true });
   };
 
   const currentPostIndex = postsIds.findIndex((id) => id === postId);
@@ -70,67 +101,41 @@ const PostPage: React.FC = () => {
   };
 
   const goToNextPost = () => {
-    setCurrentMediaIndex(0);
     if (currentPostIndex < postsIds.length - 1) {
+      setCurrentMediaIndex(0);
       navigate(`/p/${postsIds[currentPostIndex + 1]}`, {
         state: { backgroundLocation: location.state?.backgroundLocation },
       });
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error...</div>;
-  }
-  if (!data.getPost || !postId) {
-    return <div>data is nul</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data?.getPost || !postId) return <div>Data is null</div>;
 
-  const currentPost = data.getPost as Post;
+  const currentPost = data.getPost;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="absolute   top-0 right-0 justify-end p-4">
-        <button onClick={handleClose} className="text-white  text-3xl">
-          <AiOutlineClose />
-        </button>
-      </div>
-      <div className="bg-white w-full max-w-6xl grid  grid-cols-3  h-full  md:max-h-[95vh]  ">
-        <div className="relative h-full max-h-[95vh]   md:col-span-2  col-span-3  flex  justify-center">
-          <RenderMedia
-            key={postId}
-            media={currentPost.media}
-            currentMediaIndex={currentMediaIndex}
-            setCurrentMediaIndex={setCurrentMediaIndex}
-          />
-        </div>
-        <PostRenderComments
-          isLiked={currentPost.isLiked}
-          likeCount={currentPost.likeCount}
-          postUser={currentPost.user}
-          postId={postId}
-        ></PostRenderComments>
-      </div>
-
-      <button
+      <CloseButton onClick={handleClose} />
+      <PostContent
+        currentPost={currentPost}
+        postId={postId}
+        currentMediaIndex={currentMediaIndex}
+        setCurrentMediaIndex={setCurrentMediaIndex}
+      />
+      <NavigationButton
         onClick={goToPreviousPost}
-        className={`${
-          (postsIds.length == 0 || currentPostIndex == 0) && 'hidden'
-        } absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2`}
-      >
-        <BsChevronLeft />
-      </button>
-      <button
+        direction="left"
+        isHidden={postsIds.length === 0 || currentPostIndex === 0}
+      />
+      <NavigationButton
         onClick={goToNextPost}
-        className={`${
-          (postsIds.length == 0 || currentPostIndex == postsIds.length - 1) &&
-          'hidden'
-        } absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2`}
-      >
-        <BsChevronRight />
-      </button>
+        direction="right"
+        isHidden={
+          postsIds.length === 0 || currentPostIndex === postsIds.length - 1
+        }
+      />
     </div>
   );
 };

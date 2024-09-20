@@ -1,51 +1,66 @@
-import React from 'react';
+import  { FC, useState } from 'react';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { Media } from '../../utils/types';
 
-interface RenderMediaProps {
+interface MediaCarouselProps {
   media: Media[];
-  currentMediaIndex: number;
-  setCurrentMediaIndex: React.Dispatch<React.SetStateAction<number>>;
 }
-const RenderMedia: React.FC<RenderMediaProps> = ({
-  media,
-  currentMediaIndex,
-  setCurrentMediaIndex,
-}) => {
+
+const MediaCarousel: FC<MediaCarouselProps> = ({ media }) => {
+  const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(0);
+  const [mediaError, setMediaError] = useState<boolean>(false);
+
   const nextMedia = () => {
     setCurrentMediaIndex((prevIndex) =>
       prevIndex === media.length - 1 ? 0 : prevIndex + 1
     );
+    setMediaError(false);
   };
 
   const prevMedia = () => {
     setCurrentMediaIndex((prevIndex) =>
       prevIndex === 0 ? media.length - 1 : prevIndex - 1
     );
+    setMediaError(false);
   };
 
-  const renderMedia = (media: Media) => {
-    if (media.type === 'IMAGE') {
+  const handleMediaError = () => setMediaError(true);
+
+  const renderMedia = (mediaItem: Media) => {
+    if (mediaError) {
       return (
         <img
-          className=" h-full object-contain "
-          src={`https://res.cloudinary.com/doarbqecd/image/upload/v1725363937/posts/${media.publicId}`}
-          alt="Post content"
-        />
-      );
-    } else if (media.type === 'VIDEO') {
-      return (
-        <video
-          className=" h-full object-contain "
-          controls
-          src={`https://res.cloudinary.com/doarbqecd/video/upload/v1725363937/posts/${media.publicId}`}
+          className="w-full h-[500px] object-cover"
+          src="https://via.placeholder.com/400x500?text=Media+Not+Found"
+          alt="Backup Media"
         />
       );
     }
+
+    const mediaUrl = `https://res.cloudinary.com/doarbqecd/${mediaItem.type.toLowerCase()}/upload/c_fill,w_400,h_500/v1725363937/posts/${
+      mediaItem.publicId
+    }`;
+
+    return mediaItem.type === 'IMAGE' ? (
+      <img
+        className="w-full h-[500px] object-cover"
+        src={mediaUrl}
+        alt="Post content"
+        onError={handleMediaError}
+      />
+    ) : (
+      <video
+        className="w-full h-[500px] object-cover"
+        controls
+        src={mediaUrl}
+        onError={handleMediaError}
+      />
+    );
   };
+
   return (
-    <>
-      {renderMedia(media[media.length > 1 ? currentMediaIndex : 0])}
+    <div className="relative">
+      {renderMedia(media[currentMediaIndex])}
       {media.length > 1 && (
         <>
           <button
@@ -72,8 +87,8 @@ const RenderMedia: React.FC<RenderMediaProps> = ({
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 
-export default RenderMedia;
+export default MediaCarousel;

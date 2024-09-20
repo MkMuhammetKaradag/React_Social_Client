@@ -3,14 +3,14 @@ import React from 'react';
 
 interface SlidingPanelProps {
   isOpen: boolean;
-  onClose: () => void;
+
   position: 'left' | 'right';
   children: React.ReactNode;
 }
 
 const SlidingPanel: React.FC<SlidingPanelProps> = ({
   isOpen,
-  onClose,
+
   position,
   children,
 }) => {

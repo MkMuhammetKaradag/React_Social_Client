@@ -9,6 +9,7 @@ export const GET_POST_COMMENTS = gql`
           _id
           firstName
           lastName
+          userName
           profilePhoto
         }
       }

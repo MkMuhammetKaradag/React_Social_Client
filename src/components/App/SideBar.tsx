@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { IconType } from 'react-icons';
 import {
-  AiFillHome,
   AiOutlineSearch,
   AiFillCompass,
   AiFillVideoCamera,
@@ -9,10 +8,9 @@ import {
   AiFillHeart,
   AiOutlinePlusSquare,
   AiOutlineUser,
-  AiOutlineMenu,
   AiFillLinkedin,
 } from 'react-icons/ai';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import SearchPanel from './SearchPanel';
 import NotificationPanel from './NotificationPanel';
 import CreatePostModal from './CreatePostModal';
@@ -26,7 +24,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { icon: AiOutlineUser, text: 'Ana Sayfa', link: '/' },
 
-  { icon: AiOutlineSearch, text: 'Ara', link: '/search' },
+  { icon: AiOutlineSearch, text: 'Ara', link: 'search' },
 
   { icon: AiFillCompass, text: 'Keşfet', link: '/explore' },
   { icon: AiFillVideoCamera, text: 'Reels', link: '/reels' },
@@ -41,7 +39,7 @@ const Sidebar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
-
+  const pathname = useLocation().pathname;
   const toggleSearch = () => {
     setIsExpanded((prev) => !prev);
     setIsSearchOpen((prev) => !prev);
@@ -86,7 +84,9 @@ const Sidebar: React.FC = () => {
                 {item.text === 'Ara' ? (
                   <div
                     onClick={toggleSearch}
-                    className="flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out"
+                    className={`${
+                      pathname == item.link && 'bg-red-900'
+                    } flex items-center hover:bg-gray-900 p-2 rounded w-full transition-all duration-300 ease-in-out`}
                   >
                     <item.icon className="text-2xl min-w-[1.5rem]" />
                     <span
@@ -134,7 +134,9 @@ const Sidebar: React.FC = () => {
                 ) : (
                   <Link
                     to={item.link}
-                    className="flex items-center hover:bg-gray-900 p-2 rounded transition-all duration-300 ease-in-out overflow-hidden"
+                    className={`${
+                      pathname == item.link && 'bg-red-900'
+                    } flex items-center hover:bg-gray-900 p-2 rounded transition-all duration-300 ease-in-out overflow-hidden`}
                   >
                     <item.icon className="text-2xl min-w-[1.5rem]" />
                     <span
@@ -184,7 +186,7 @@ const Sidebar: React.FC = () => {
 
       {/* Mobile Bottom Bar */}
 
-      <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-2 flex justify-around md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-2 z-50 flex justify-around md:hidden">
         {menuItems.slice(0, 5).map((item, index) => (
           <button
             key={index}

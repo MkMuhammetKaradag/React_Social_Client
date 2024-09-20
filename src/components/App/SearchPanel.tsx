@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import SlidingPanel from './SlidingPanel';
 import { GET_SEARCH_USERS } from '../../graphql/queries/SearchUsers';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 
@@ -75,7 +75,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => {
     });
   };
   return (
-    <SlidingPanel isOpen={isOpen} onClose={onClose} position="left">
+    <SlidingPanel isOpen={isOpen}  position="left">
       <div className="flex items-center mb-4 border border-gray-700 rounded">
         <input
           type="text"
@@ -98,7 +98,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ isOpen, onClose }) => {
                 <img
                   src={user.profilePhoto || 'https://via.placeholder.com/40'}
                   alt="User"
-                  className="rounded-full mr-2"
+                  className="rounded-full w-10 h-10  mr-2 object-cover"
                 />
                 <Link onClick={onClose} to={`user/${user._id}`}>
                   <p className="font-bold">{user.userName}</p>

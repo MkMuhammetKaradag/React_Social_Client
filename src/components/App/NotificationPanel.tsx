@@ -12,7 +12,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
   onClose,
 }) => {
   return (
-    <SlidingPanel isOpen={isOpen} onClose={onClose} position="right">
+    <SlidingPanel isOpen={isOpen}  position="right">
       <h2 className="text-xl font-bold mb-4">Bildirimler</h2>
       {/* Bildirim içeriği */}
       <div className="space-y-4">

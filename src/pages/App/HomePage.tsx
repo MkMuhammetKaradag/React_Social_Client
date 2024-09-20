@@ -1,69 +1,56 @@
 import { useMutation, useQuery } from '@apollo/client';
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { LOGOUT_USER } from '../../graphql/mutations/Logout';
 import { useAppDispatch } from '../../context/hooks';
 import { logout } from '../../context/slices/AuthSlice';
 import { GET_HOMA_PAGE_POSTS } from '../../graphql/queries/GetPostsFromFollowedUsers';
 import HomePageCard from '../../components/App/HomePageCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { PostPageCardPost } from '../../utils/types';
 
-export interface PostUser {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  profilePhoto?: string;
-}
+// Define types for PostUser and Post
 
-export interface Post {
-  _id: string;
-  isLiked: boolean;
-  user: PostUser;
-  media: {
-    url: string;
-    type: string;
-    publicId: string;
-  }[];
-  commentCount: number;
-  likeCount: number;
-  title: string;
-}
 
 const HomePage = () => {
+  // Set up state and constants
   const [logoutUser] = useMutation(LOGOUT_USER);
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const pageSize = 2;
+  const PAGE_SIZE = 2;
 
+  // Handle user logout
   const handleLogout = async () => {
     try {
       await logoutUser();
       dispatch(logout());
     } catch (err) {
-      console.log(err);
+      console.error('Logout error:', err);
     }
   };
 
+  // Fetch posts from followed users
   const { data, loading, error, fetchMore } = useQuery(GET_HOMA_PAGE_POSTS, {
     variables: {
       input: {
         page: 1,
-        pageSize: pageSize,
+        pageSize: PAGE_SIZE,
       },
     },
     onCompleted: (data) => {
-      if (data.getPostsFromFollowedUsers.length === 0) setHasMore(false);
-      if (data.getPostsFromFollowedUsers.length < pageSize) setHasMore(false);
+      const postCount = data.getPostsFromFollowedUsers.length;
+      setHasMore(postCount > 0 && postCount === PAGE_SIZE);
     },
   });
 
+  // Load more posts when scrolling
   const loadMore = () => {
     if (!hasMore) return;
     fetchMore({
       variables: {
         input: {
           page: page + 1,
-          pageSize: pageSize,
+          pageSize: PAGE_SIZE,
         },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -76,7 +63,7 @@ const HomePage = () => {
         }
         setPage(page + 1);
         setHasMore(
-          fetchMoreResult.getPostsFromFollowedUsers.length === pageSize
+          fetchMoreResult.getPostsFromFollowedUsers.length === PAGE_SIZE
         );
         return {
           getPostsFromFollowedUsers: [
@@ -88,13 +75,18 @@ const HomePage = () => {
     });
   };
 
+  // Show loading state for initial load
   if (loading && page === 1) return <p>Loading...</p>;
+
+  // Show error message if query fails
   if (error) return <p>Error: {error.message}</p>;
-  console.log(data?.getPostsFromFollowedUsers);
+
   return (
     <div className="grid md:grid-cols-4 sm:grid-cols-3">
+      {/* Main content area */}
       <div className="col-span-3 justify-center">
         <div className="bg-red-50">Home Page</div>
+        {/* Infinite scroll component for posts */}
         <InfiniteScroll
           dataLength={data?.getPostsFromFollowedUsers.length || 0}
           next={loadMore}
@@ -106,14 +98,16 @@ const HomePage = () => {
             </p>
           }
         >
-          {data?.getPostsFromFollowedUsers.map((post: Post) => (
+          {/* Render posts */}
+          {data?.getPostsFromFollowedUsers.map((post: PostPageCardPost) => (
             <HomePageCard key={post._id} post={post} />
           ))}
         </InfiniteScroll>
       </div>
+      {/* Logout button */}
       <div
         onClick={handleLogout}
-        className="col-span-1 md:block hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        className="col-span-1 md:block hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
       >
         <span className="font-semibold text-sm">Log out</span>
       </div>
