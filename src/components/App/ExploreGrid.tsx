@@ -77,36 +77,38 @@ const ExploreGrid: React.FC = () => {
   }, [dispatch, fetchMore, page]);
 
   // Loading and error handling
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading..11.</p>;
   if (error) return <p>Error: {error.message}</p>;
-  if (!data) return <p>No data found</p>;
+  if (!data.discoverPosts.posts) return <p>No data found</p>;
 
   const posts = data.discoverPosts.posts;
-
+  console.log(data.discoverPosts);
   return (
     <div className="container mx-auto px-4">
-      <InfiniteScroll
-        dataLength={posts.length} // The length of the posts array
-        next={loadMore} // Function to load more posts
-        hasMore={hasMore} // Indicates if more data is available
-        loader={<h4>Loading...</h4>} // Loader while fetching more posts
-        endMessage={
-          <p style={{ textAlign: 'center' }}>
-            <b>You have seen it all!</b>
-          </p>
-        }
-      >
-        <div className="grid grid-cols-3 gap-1 md:gap-2">
-          {posts.map((post: ExplorePageCardPost, index: number) => (
-            <PostCard
-              key={post._id}
-              post={post}
-              index={index}
-              location={location}
-            />
-          ))}
-        </div>
-      </InfiniteScroll>
+      {posts.length > 0 && (
+        <InfiniteScroll
+          dataLength={posts.length} // The length of the posts array
+          next={loadMore} // Function to load more posts
+          hasMore={hasMore} // Indicates if more data is available
+          loader={<h4>Loading...2</h4>} // Loader while fetching more posts
+          endMessage={
+            <p style={{ textAlign: 'center' }}>
+              <b>You have seen it all!</b>
+            </p>
+          }
+        >
+          <div className="grid grid-cols-3 gap-1 md:gap-2">
+            {posts.map((post: ExplorePageCardPost, index: number) => (
+              <PostCard
+                key={post._id}
+                post={post}
+                index={index}
+                location={location}
+              />
+            ))}
+          </div>
+        </InfiniteScroll>
+      )}
     </div>
   );
 };

@@ -16,7 +16,7 @@ export const UserCard: React.FC<{ user: User }> = ({ user }) => (
       <img
         src={user.profilePhoto || 'https://via.placeholder.com/40'}
         alt={`${user.firstName} ${user.lastName}`}
-        className="w-10 h-10 rounded-full mr-3"
+        className="w-10 h-10 rounded-full mr-3 object-cover"
       />
       <div>
         <div>{user.userName}</div>

@@ -1,22 +1,35 @@
 import React, { useState, useMemo } from 'react';
+import TagInput from './TagInput';
 
 interface CreatePostProps {
   selectedFiles: File[];
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   title: string;
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
+  tags: string[];
 }
 
 // Medya görüntüleme bileşeni
-const MediaViewer: React.FC<{ file: File; url: string }> = ({ file, url }) => (
+const MediaViewer: React.FC<{ file: File; url: string }> = ({ file, url }) =>
   file.type.startsWith('image/') ? (
-    <img src={url} className="max-w-full max-h-full object-contain" alt={file.name} />
+    <img
+      src={url}
+      className="max-w-full max-h-full object-contain"
+      alt={file.name}
+    />
   ) : (
-    <video src={url} className="max-w-full max-h-full object-contain" controls />
-  )
-);
+    <video
+      src={url}
+      className="max-w-full max-h-full object-contain"
+      controls
+    />
+  );
 
 // Navigasyon düğmeleri bileşeni
-const NavigationButtons: React.FC<{ onPrevious: () => void; onNext: () => void }> = ({ onPrevious, onNext }) => (
+const NavigationButtons: React.FC<{
+  onPrevious: () => void;
+  onNext: () => void;
+}> = ({ onPrevious, onNext }) => (
   <>
     <button
       type="button"
@@ -35,20 +48,33 @@ const NavigationButtons: React.FC<{ onPrevious: () => void; onNext: () => void }
   </>
 );
 
-const CreatePost: React.FC<CreatePostProps> = ({ selectedFiles, setTitle, title }) => {
+const CreatePost: React.FC<CreatePostProps> = ({
+  selectedFiles,
+  setTitle,
+  title,
+  setTags,
+  tags,
+}) => {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
 
   const handlePrevious = () => {
-    setCurrentFileIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : selectedFiles.length - 1));
+    setCurrentFileIndex((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : selectedFiles.length - 1
+    );
   };
 
   const handleNext = () => {
-    setCurrentFileIndex((prevIndex) => (prevIndex < selectedFiles.length - 1 ? prevIndex + 1 : 0));
+    setCurrentFileIndex((prevIndex) =>
+      prevIndex < selectedFiles.length - 1 ? prevIndex + 1 : 0
+    );
   };
 
   const currentFile = selectedFiles[currentFileIndex];
 
-  const fileUrl = useMemo(() => (currentFile ? URL.createObjectURL(currentFile) : ''), [currentFile]);
+  const fileUrl = useMemo(
+    () => (currentFile ? URL.createObjectURL(currentFile) : ''),
+    [currentFile]
+  );
 
   return (
     <div className="flex flex-col items-center w-full max-w-2xl mx-auto">
@@ -59,7 +85,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ selectedFiles, setTitle, title 
               <MediaViewer file={currentFile} url={fileUrl} />
             </div>
             {selectedFiles.length > 1 && (
-              <NavigationButtons onPrevious={handlePrevious} onNext={handleNext} />
+              <NavigationButtons
+                onPrevious={handlePrevious}
+                onNext={handleNext}
+              />
             )}
           </>
         )}
@@ -73,6 +102,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ selectedFiles, setTitle, title 
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Enter post title"
       />
+      <TagInput setTags={setTags} tags={tags}></TagInput>
       <div className="mt-4 text-sm text-gray-500">
         {currentFileIndex + 1} / {selectedFiles.length}
       </div>

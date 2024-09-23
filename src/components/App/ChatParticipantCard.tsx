@@ -29,7 +29,7 @@ const ChatParticipantCard: React.FC<ChatParticipantCardProps> = React.memo(
             key={index}
             src={participant.profilePhoto || 'https://via.placeholder.com/40'}
             alt={participant.userName}
-            className="w-10 h-10 rounded-full border-2 border-gray-800"
+            className="w-10 h-10 rounded-full border-2 border-gray-800 object-cover"
             style={{ zIndex: 3 - index }}
           />
         ))}
@@ -68,7 +68,7 @@ const ChatParticipantCard: React.FC<ChatParticipantCardProps> = React.memo(
               participants[0].profilePhoto || 'https://via.placeholder.com/40'
             }
             alt={participants[0].userName}
-            className="w-12 h-12 rounded-full"
+            className="w-12 h-12 rounded-full object-cover"
           />
         )}
         {renderChatInfo()}

@@ -30,6 +30,7 @@ interface SignedUrlData {
 // CreatePost input and response interface
 interface CreatePostInput {
   title: string;
+  tags: string[];
   media: Media[];
 }
 
@@ -88,6 +89,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [step, setStep] = useState(1);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [title, setTitle] = useState<string>('');
+  const [tags, setTags] = useState<string[]>([]);
 
   const [getSignedUrl] = useMutation<SignedUrlData, { input: SignUrlInput }>(
     GET_SIGNED_URL
@@ -113,7 +115,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     try {
       const result = await createPost({
         variables: {
-          input: { title, media: uploadedMedia },
+          input: { title, media: uploadedMedia, tags },
         },
       });
       console.log('Post created:', result.data?.createPost);
@@ -150,6 +152,8 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             selectedFiles={selectedFiles}
             setTitle={setTitle}
             title={title}
+            tags={tags}
+            setTags={setTags}
           />
         );
       default:
