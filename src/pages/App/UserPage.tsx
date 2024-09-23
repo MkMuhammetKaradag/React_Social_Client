@@ -32,7 +32,9 @@ interface SignUrlInput {
 }
 
 // Component for uploading profile image
-const ProfileUploadImage: React.FC<{ data: ProfileData }> = ({ data }) => {
+export const ProfileUploadImage: React.FC<{ profilePhoto?: string }> = ({
+  profilePhoto,
+}) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [getSignedUrl] = useMutation<SignedUrlData, { input: SignUrlInput }>(
     GET_SIGNED_URL
@@ -91,11 +93,7 @@ const ProfileUploadImage: React.FC<{ data: ProfileData }> = ({ data }) => {
   return (
     <>
       <img
-        src={
-          selectedImage ||
-          data.profilePhoto ||
-          'https://via.placeholder.com/120'
-        }
+        src={selectedImage || profilePhoto || 'https://via.placeholder.com/120'}
         alt="Profile"
         className="w-full h-full rounded-full object-cover"
       />
@@ -130,7 +128,7 @@ const ProfileHeader: React.FC<{ data: ProfileData }> = ({ data }) => {
         } rounded-full flex items-center w-32 h-32 justify-center`}
       >
         {user?._id === data._id ? (
-          <ProfileUploadImage data={data} />
+          <ProfileUploadImage profilePhoto={data.profilePhoto} />
         ) : (
           <img
             src={data.profilePhoto || 'https://via.placeholder.com/120'}

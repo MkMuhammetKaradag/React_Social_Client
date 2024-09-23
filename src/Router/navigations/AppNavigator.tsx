@@ -18,6 +18,7 @@ import { useAppSelector } from '../../context/hooks';
 import VideoCallPage from '../../pages/App/VideoCallPage';
 import AccountPage from '../../pages/App/AccountPage';
 import ProfileEditPage from '../../pages/App/ProfileEditPage';
+import FollowRequestPage from '../../pages/App/FollowRequestPage';
 interface VideoCallStartedNotification {
   userName: string;
   chatId: string;
@@ -140,6 +141,10 @@ const AppNavigator: React.FC = () => {
               }
             />
             <Route path="edit" element={<ProfileEditPage></ProfileEditPage>} />
+            <Route
+              path="followRequest"
+              element={<FollowRequestPage></FollowRequestPage>}
+            />
           </Route>
         </Routes>
         {/* Eğer modal açılacaksa bu blok devreye girer */}

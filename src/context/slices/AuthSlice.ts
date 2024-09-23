@@ -5,7 +5,9 @@ interface User {
   _id: string;
   firstName: string;
   lastName: string;
+  userName: string;
   email: string;
+  isPrivate: boolean;
   profilePhoto: string;
 }
 
@@ -30,6 +32,9 @@ const authSlice = createSlice({
       state.isAuthenticated = !!action.payload;
       state.isLoading = false;
     },
+    setUpdateUser: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -41,5 +46,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, setLoading, logout } = authSlice.actions;
+export const { setUser, setLoading, logout, setUpdateUser } = authSlice.actions;
 export default authSlice.reducer;
