@@ -69,3 +69,15 @@ export interface Message {
   content: string;
   sender: Sender;
 }
+
+export interface FollowRequest {
+  _id: string;
+  status: string;
+}
+
+export interface GetFollowingRequest extends FollowRequest {
+  to: User;
+}
+export interface GetFollowRequest extends FollowRequest {
+  from: User;
+}

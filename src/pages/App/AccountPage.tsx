@@ -6,7 +6,10 @@ const AccountPage = () => {
   return (
     <div className="flex  h-[95vh] ">
       <div className="w-1/4 border-r">
-        <div className="bg-gray-100 p-3  rounded-md m-2 hover:bg-gray-200">
+        <div
+          onClick={() => navigate('edit')}
+          className="bg-gray-100 p-3  rounded-md m-2 hover:bg-gray-200"
+        >
           Edit
         </div>
         <div
@@ -15,7 +18,10 @@ const AccountPage = () => {
         >
           fallowRequest
         </div>
-        <div className="bg-gray-100 p-3  rounded-md m-2 hover:bg-gray-200">
+        <div
+          onClick={() => navigate('followingRequest')}
+          className="bg-gray-100 p-3  rounded-md m-2 hover:bg-gray-200"
+        >
           fallowingRequest
         </div>
       </div>

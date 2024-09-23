@@ -19,6 +19,7 @@ import VideoCallPage from '../../pages/App/VideoCallPage';
 import AccountPage from '../../pages/App/AccountPage';
 import ProfileEditPage from '../../pages/App/ProfileEditPage';
 import FollowRequestPage from '../../pages/App/FollowRequestPage';
+import FollowingRequestPage from '../../pages/App/FollowingRequestPage';
 interface VideoCallStartedNotification {
   userName: string;
   chatId: string;
@@ -144,6 +145,10 @@ const AppNavigator: React.FC = () => {
             <Route
               path="followRequest"
               element={<FollowRequestPage></FollowRequestPage>}
+            />
+            <Route
+              path="followingRequest"
+              element={<FollowingRequestPage></FollowingRequestPage>}
             />
           </Route>
         </Routes>
