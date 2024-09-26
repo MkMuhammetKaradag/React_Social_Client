@@ -16,7 +16,7 @@ const ExploreGrid: React.FC = () => {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const location = useLocation();
+
   const pageSize = 10;
 
   // Apollo's `useQuery` hook to fetch the initial data
@@ -24,6 +24,8 @@ const ExploreGrid: React.FC = () => {
     variables: { page: 1, pageSize },
     onCompleted: (data) => {
       if (data.discoverPosts.posts) {
+        const postCount = data.discoverPosts.posts.length;
+        setHasMore(postCount > 0 && postCount === pageSize);
         dispatch(
           setPostsIds(
             data.discoverPosts.posts.map(
@@ -32,9 +34,6 @@ const ExploreGrid: React.FC = () => {
           )
         );
       }
-    },
-    onError: (error) => {
-      console.error('Error fetching posts:', error);
     },
   });
 
@@ -55,6 +54,7 @@ const ExploreGrid: React.FC = () => {
         }
 
         setPage(page + 1); // Update the current page number
+        setHasMore(fetchMoreResult.discoverPosts.posts.length === pageSize);
         dispatch(
           addPostsIds(
             fetchMoreResult.discoverPosts.posts.map(
@@ -74,7 +74,7 @@ const ExploreGrid: React.FC = () => {
         };
       },
     });
-  }, [dispatch, fetchMore, page]);
+  }, [fetchMore, page]);
 
   // Loading and error handling
   if (loading) return <p>Loading..11.</p>;
@@ -82,7 +82,7 @@ const ExploreGrid: React.FC = () => {
   if (!data.discoverPosts.posts) return <p>No data found</p>;
 
   const posts = data.discoverPosts.posts;
-  console.log(data.discoverPosts);
+
   return (
     <div className="container mx-auto px-4">
       {posts.length > 0 && (
@@ -99,12 +99,7 @@ const ExploreGrid: React.FC = () => {
         >
           <div className="grid grid-cols-3 gap-1 md:gap-2">
             {posts.map((post: ExplorePageCardPost, index: number) => (
-              <PostCard
-                key={post._id}
-                post={post}
-                index={index}
-                location={location}
-              />
+              <PostCard key={post._id} post={post} index={index} />
             ))}
           </div>
         </InfiniteScroll>
@@ -117,9 +112,9 @@ const ExploreGrid: React.FC = () => {
 export const PostCard: React.FC<{
   post: ExplorePageCardPost;
   index?: number;
-  location: ReturnType<typeof useLocation>;
-}> = ({ post, index, location }) => {
+}> = ({ post, index }) => {
   // Determine if the post should take up more space
+  const location = useLocation();
   const isRowSpan =
     index !== undefined && (index % 10 === 2 || index % 10 === 5);
 

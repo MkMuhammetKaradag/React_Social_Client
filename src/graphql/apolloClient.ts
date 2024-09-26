@@ -10,36 +10,37 @@ import { getMainDefinition } from '@apollo/client/utilities';
 loadDevMessages();
 loadErrorMessages();
 
-const getToken = (name: string) => {
-  const value = `; ${document.cookie}`;
-  console.log(document.cookie);
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift();
-};
-// auth link
-const authLink = setContext(async (_, { headers }) => {
-  const token = getToken('mk_session');
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
+// const getToken = (name: string) => {
+//   const value = `; ${document.cookie}`;
+
+//   const parts = value.split(`; ${name}=`);
+//   if (parts.length === 2) return parts.pop()?.split(';').shift();
+// };
+// // auth link
+// const authLink = setContext(async (_, { headers }) => {
+//   const token = getToken('mk_session');
+//   return {
+//     headers: {
+//       ...headers,
+//       authorization: token ? `Bearer ${token}` : '',
+//     },
+//   };
+// });
 
 //todo:  websocket link
 
 const wsLink = new WebSocketLink({
   uri: 'ws://localhost:8080/graphql',
-  options: {
-    connectionParams: () => {
-      const token = getToken('mk_session');
-      if (token) return { Authorization: `Bearer ${token}` };
-    },
-    connectionCallback: (err: any) => {
-      if (err) console.log(err);
-    },
-  },
+
+  // options: {
+  //   connectionParams: () => {
+  //     const token = getToken('mk_session');
+  //     if (token) return { Authorization: `Bearer ${token}` };
+  //   },
+  //   connectionCallback: (err: any) => {
+  //     if (err) console.log(err);
+  //   },
+  // },
 });
 
 // upload link
@@ -74,7 +75,7 @@ const splitLink = split(
     );
   },
   wsLink,
-  ApolloLink.from([errorLink, authLink, uploadLink])
+  ApolloLink.from([errorLink, uploadLink])
 );
 
 const cache = new InMemoryCache({

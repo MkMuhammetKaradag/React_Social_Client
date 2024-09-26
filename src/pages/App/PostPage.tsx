@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
@@ -72,10 +72,13 @@ const PostPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  if (!postId) {
+    return <div>Data is null</div>;
+  }
   const { loading, error, data } = useQuery<GetPostData, GetPostVars>(
     GET_POST,
     {
-      variables: { postId: postId || '' },
+      variables: { postId: postId },
     }
   );
 
