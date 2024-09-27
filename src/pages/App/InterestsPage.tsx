@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import TagInput from '../../components/App/TagInput';
 import { useAppDispatch, useAppSelector } from '../../context/hooks';
 import { useMutation } from '@apollo/client';
