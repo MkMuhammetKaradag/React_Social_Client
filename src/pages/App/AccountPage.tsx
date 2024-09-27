@@ -24,6 +24,13 @@ const AccountPage = () => {
         >
           fallowingRequest
         </div>
+
+        <div
+          onClick={() => navigate('interests')}
+          className="bg-gray-100 p-3  rounded-md m-2 hover:bg-gray-200"
+        >
+          my interests
+        </div>
       </div>
       <div className="w-3/4  h-full  items-center  justify-center flex">
         <Outlet />

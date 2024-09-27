@@ -3,6 +3,7 @@ export const GET_ME = gql`
   query GetMe {
     getMe {
       _id
+      interests
       firstName
       lastName
       userName

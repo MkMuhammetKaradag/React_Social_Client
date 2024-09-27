@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface User {
   _id: string;
+  interests: string[];
   firstName: string;
   lastName: string;
   userName: string;
@@ -35,6 +36,9 @@ const authSlice = createSlice({
     setUpdateUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
     },
+    setUserInterests: (state, action: PayloadAction<string[]>) => {
+      state.user!.interests = action.payload;
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -46,5 +50,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, setLoading, logout, setUpdateUser } = authSlice.actions;
+export const { setUser, setLoading, logout, setUpdateUser, setUserInterests } =
+  authSlice.actions;
 export default authSlice.reducer;
