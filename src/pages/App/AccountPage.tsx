@@ -31,6 +31,13 @@ const AccountPage = () => {
         >
           my interests
         </div>
+
+        <div
+          onClick={() => navigate('liked')}
+          className="bg-gray-100 p-3  rounded-md m-2 hover:bg-gray-200"
+        >
+          posts I liked
+        </div>
       </div>
       <div className="w-3/4  h-full  items-center  justify-center flex">
         <Outlet />

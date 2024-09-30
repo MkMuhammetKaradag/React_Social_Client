@@ -105,7 +105,7 @@ const UserPostsGrid: React.FC<UserPostsGridProps> = ({ userId }) => {
       >
         <div className="grid grid-cols-3 gap-1 md:gap-2">
           {posts.map((post: ExplorePageCardPost) => (
-            <PostCard key={post._id} post={post} location={location} />
+            <PostCard key={post._id} post={post}  />
           ))}
         </div>
       </InfiniteScroll>
