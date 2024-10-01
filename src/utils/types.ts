@@ -81,3 +81,53 @@ export interface GetFollowingRequest extends FollowRequest {
 export interface GetFollowRequest extends FollowRequest {
   from: User;
 }
+
+export enum NotificationContentType {
+  POST = 'Post',
+  LIKE = 'Like',
+  COMMENT = 'Comment',
+}
+
+// Content interfaces
+export interface NotificationContentPost {
+  _id: string; // Post ID
+}
+
+export interface NotificationContentLike {
+  _id: string; // Like ID
+  createdAt: string; // Like creation date
+}
+
+export interface NotificationContentComment {
+  _id: string; // Comment ID
+  content: string; // The content of the comment
+}
+
+// Conditional type to determine the content type based on contentType
+export type NotificationContent<T extends NotificationContentType> =
+  T extends NotificationContentType.POST
+    ? NotificationContentPost
+    : T extends NotificationContentType.LIKE
+    ? NotificationContentLike
+    : T extends NotificationContentType.COMMENT
+    ? NotificationContentComment
+    : never;
+
+// Generic notification interface
+export interface NotificationGeneric<T extends NotificationContentType> {
+  _id: string;
+  message: string;
+  isRead: boolean;
+  contentType: T;
+  sender: User;
+  content: NotificationContent<T>;
+}
+
+// Union type for all possible notification types
+export type AnyNotification =
+  | NotificationGeneric<NotificationContentType.POST>
+  | NotificationGeneric<NotificationContentType.LIKE>
+  | NotificationGeneric<NotificationContentType.COMMENT>;
+
+// Now you can use this type for an array of notifications
+export type NotificationArray = AnyNotification[];

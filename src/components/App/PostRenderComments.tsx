@@ -29,7 +29,6 @@ interface Comment {
 const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
   postId,
   postUser,
-  likeCount,
   isLiked,
 }) => {
   const [page, setPage] = useState(1);
@@ -125,7 +124,6 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       },
     })
       .then((res) => {
-
         setPostIsLiked(true);
       })
       .catch((e) => {
@@ -140,7 +138,6 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
       },
     })
       .then((res) => {
-     
         setPostIsLiked(false);
       })
       .catch((e) => {
