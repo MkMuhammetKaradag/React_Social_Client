@@ -62,7 +62,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
   };
 
   const notifications = data.getNotifications as NotificationArray;
-
+  console.log(notifications);
   const filteredNotifications =
     activeFilter === 'ALL'
       ? notifications
@@ -92,10 +92,12 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({
               Tümü
             </button>
             <button
-              onClick={() => handleFilterChange(NotificationType.POST)}
+              onClick={() =>
+                handleFilterChange(NotificationType.DIRECT_MESSAGE)
+              }
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
             >
-              Gönderiler
+              Messajlar
             </button>
             <button
               onClick={() => handleFilterChange(NotificationType.LIKE)}

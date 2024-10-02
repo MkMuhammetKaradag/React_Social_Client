@@ -86,6 +86,7 @@ export enum NotificationContentType {
   POST = 'Post',
   LIKE = 'Like',
   COMMENT = 'Comment',
+  USER = 'User',
 }
 
 // Content interfaces
@@ -107,6 +108,7 @@ export enum NotificationType {
   POST = 'POST',
   LIKE = 'LIKE',
   COMMENT = 'COMMENT',
+  DIRECT_MESSAGE = 'DIRECT_MESSAGE',
 }
 
 // Conditional type to determine the content type based on contentType

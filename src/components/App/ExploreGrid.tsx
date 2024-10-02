@@ -126,9 +126,7 @@ export const PostCard: React.FC<{
     >
       <Link to={`/p/${post._id}`} state={{ backgroundLocation: location }}>
         <MediaItem rowSpan={isRowSpan} media={post.firstMedia} />
-        {post.firstMedia.type === 'VIDEO' && (
-          <span className="absolute top-2 right-2 text-white">---</span>
-        )}
+
         <Overlay post={post} />
       </Link>
     </div>

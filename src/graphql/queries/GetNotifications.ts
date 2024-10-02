@@ -25,6 +25,9 @@ export const GET_NOTIFICATIONS = gql`
         ... on Post {
           _id
         }
+        ... on User {
+          _id
+        }
       }
     }
   }

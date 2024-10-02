@@ -245,9 +245,9 @@ const ProfileActions: React.FC<{
       : followRequestIsSent
       ? unFollowUser
       : followUser;
-    mutation({ variables: { targetUserId: userId } })
-      .then((res) => console.log(res))
-      .catch((error) => console.error(error));
+    mutation({ variables: { targetUserId: userId } }).catch((error) =>
+      console.error(error)
+    );
   };
 
   const handleChatAction = () => {

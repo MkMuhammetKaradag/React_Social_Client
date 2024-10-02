@@ -22,6 +22,9 @@ export const NEW_NOTIFICATION_SUBSCRIPTION = gql`
         ... on Post {
           _id
         }
+        ... on User {
+          _id
+        }
       }
     }
   }

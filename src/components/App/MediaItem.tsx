@@ -46,7 +46,7 @@ const MediaItem: React.FC<{ media: Media; rowSpan: boolean }> = ({
   }, [media, rowSpan]);
 
   const handleError = () => {
-    console.error(`Failed to load media: ${media.publicId}`);
+    // console.error(`Failed to load media: ${media.publicId}`);
     setSrc(DEFAULT_IMAGE_URL);
   };
 
