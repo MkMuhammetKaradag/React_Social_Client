@@ -10,6 +10,7 @@ export const NEW_NOTIFICATION_SUBSCRIPTION = gql`
       }
       isRead
       message
+      type
       content {
         ... on Comment {
           _id
