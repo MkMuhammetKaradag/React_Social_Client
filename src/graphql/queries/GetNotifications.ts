@@ -7,6 +7,7 @@ export const GET_NOTIFICATIONS = gql`
       message
       isRead
       contentType
+      type
       sender {
         _id
         userName

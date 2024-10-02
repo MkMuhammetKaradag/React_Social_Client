@@ -103,6 +103,12 @@ export interface NotificationContentComment {
   content: string; // The content of the comment
 }
 
+export enum NotificationType {
+  POST = 'POST',
+  LIKE = 'LIKE',
+  COMMENT = 'COMMENT',
+}
+
 // Conditional type to determine the content type based on contentType
 export type NotificationContent<T extends NotificationContentType> =
   T extends NotificationContentType.POST
@@ -119,6 +125,7 @@ export interface NotificationGeneric<T extends NotificationContentType> {
   message: string;
   isRead: boolean;
   contentType: T;
+  type: NotificationType;
   sender: User;
   content: NotificationContent<T>;
 }
