@@ -7,27 +7,16 @@ import { GET_HOMA_PAGE_POSTS } from '../../graphql/queries/GetPostsFromFollowedU
 import HomePageCard from '../../components/App/HomePageCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { PostPageCardPost } from '../../utils/types';
+import GetFriendSuggestions from '../../components/App/GetFriendSuggestions';
 
 // Define types for PostUser and Post
 
-
 const HomePage = () => {
   // Set up state and constants
-  const [logoutUser] = useMutation(LOGOUT_USER);
-  const dispatch = useAppDispatch();
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const PAGE_SIZE = 2;
-
-  // Handle user logout
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      dispatch(logout());
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
-  };
 
   // Fetch posts from followed users
   const { data, loading, error, fetchMore } = useQuery(GET_HOMA_PAGE_POSTS, {
@@ -85,7 +74,7 @@ const HomePage = () => {
     <div className="grid md:grid-cols-4 sm:grid-cols-3">
       {/* Main content area */}
       <div className="col-span-3 justify-center">
-        <div className="bg-red-50">Home Page</div>
+        {/* <div className="bg-red-50">Home Page</div> */}
         {/* Infinite scroll component for posts */}
         <InfiniteScroll
           dataLength={data?.getPostsFromFollowedUsers.length || 0}
@@ -105,11 +94,8 @@ const HomePage = () => {
         </InfiniteScroll>
       </div>
       {/* Logout button */}
-      <div
-        onClick={handleLogout}
-        className="col-span-1 md:block hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
-      >
-        <span className="font-semibold text-sm">Log out</span>
+      <div className="col-span-1 md:block hidden px-4 py-2 text-sm text-gray-700 ">
+        <GetFriendSuggestions />
       </div>
     </div>
   );

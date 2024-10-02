@@ -176,7 +176,7 @@ const PostRenderComments: React.FC<PostRenderCommentsProps> = ({
           {comments.map((comment, i) => (
             <div key={comment._id} className="mb-3 flex ">
               <img
-                src={postUser.profilePhoto || 'https://via.placeholder.com/40'}
+                src={comment.user.profilePhoto || 'https://via.placeholder.com/40'}
                 alt="User"
                 className="w-10 h-10 rounded-full mr-2 object-cover"
               />
