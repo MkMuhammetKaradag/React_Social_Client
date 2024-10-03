@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSubscription } from '@apollo/client';
+import { CHANGE_USER_STATUS_SUBSCRIPTION } from '../../graphql/subscriptions/ChangeUserStatus';
 
 interface Participant {
+  _id: string;
   profilePhoto: string | null;
   userName: string;
+  status: string;
 }
 
 interface ChatParticipantCardProps {
@@ -22,16 +26,48 @@ const ChatParticipantCard: React.FC<ChatParticipantCardProps> = React.memo(
     const displayParticipants = participants.slice(0, 3);
     const remainingParticipants = participants.length - 3;
 
+    const [onlineStatuses, setOnlineStatuses] = useState<{
+      [key: string]: boolean;
+    }>({});
+
+    participants.forEach((participant) => {
+      const { data } = useSubscription(CHANGE_USER_STATUS_SUBSCRIPTION, {
+        variables: { userId: participant._id },
+      });
+      useEffect(() => {
+        const initialStatuses: { [key: string]: boolean } = {};
+        participants.forEach((participant) => {
+          initialStatuses[participant._id] = participant.status === 'online';
+        });
+        setOnlineStatuses(initialStatuses);
+      }, [participants]);
+      useEffect(() => {
+        if (data) {
+          setOnlineStatuses((prev) => ({
+            ...prev,
+            [data.changeUserStatus.userId]:
+              data.changeUserStatus.status === 'online',
+          }));
+        }
+      }, [data]);
+    });
+    console.log(onlineStatuses);
     const renderParticipantImages = () => (
-      <div className="flex -space-x-3">
+      <div className="flex -space-x-3 relative">
         {displayParticipants.map((participant, index) => (
-          <img
-            key={index}
-            src={participant.profilePhoto || 'https://via.placeholder.com/40'}
-            alt={participant.userName}
-            className="w-10 h-10 rounded-full border-2 border-gray-800 object-cover"
-            style={{ zIndex: 3 - index }}
-          />
+          <div key={index} className="relative">
+            <img
+              src={participant.profilePhoto || 'https://via.placeholder.com/40'}
+              alt={participant.userName}
+              className="w-10 h-10 rounded-full border-2 border-gray-800 object-cover"
+              style={{ zIndex: 3 - index }}
+            />
+            {onlineStatuses[participant._id] && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                .
+              </span>
+            )}
+          </div>
         ))}
         {remainingParticipants > 0 && (
           <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-500 text-white text-sm font-bold border-2 border-gray-800">
@@ -63,13 +99,18 @@ const ChatParticipantCard: React.FC<ChatParticipantCardProps> = React.memo(
         {isGroupChat ? (
           renderParticipantImages()
         ) : (
-          <img
-            src={
-              participants[0].profilePhoto || 'https://via.placeholder.com/40'
-            }
-            alt={participants[0].userName}
-            className="w-12 h-12 rounded-full object-cover"
-          />
+          <div className="relative">
+            <img
+              src={
+                participants[0].profilePhoto || 'https://via.placeholder.com/40'
+              }
+              alt={participants[0].userName}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            {onlineStatuses[participants[0]._id] && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+            )}
+          </div>
         )}
         {renderChatInfo()}
       </div>

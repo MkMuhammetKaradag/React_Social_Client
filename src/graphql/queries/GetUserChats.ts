@@ -4,8 +4,10 @@ export const GET_USER_CHATS = gql`
     getChats {
       _id
       participants {
+        _id
         userName
         profilePhoto
+        status
       }
       lastMessage {
         content

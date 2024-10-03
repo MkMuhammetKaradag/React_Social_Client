@@ -5,8 +5,10 @@ import { GET_USER_CHATS } from '../../graphql/queries/GetUserChats';
 import ChatParticipantCard from './ChatParticipantCard';
 
 interface Participant {
+  _id: string;
   userName: string;
   profilePhoto: string | null;
+  status: string;
 }
 
 interface LastMessage {
@@ -24,20 +26,30 @@ interface ChatItem {
 
 const ChatList: React.FC = () => {
   const { chatId } = useParams<{ chatId?: string }>();
-  const { data, loading, error } = useQuery<{ getChats: ChatItem[] }>(GET_USER_CHATS);
+  const { data, loading, error } = useQuery<{ getChats: ChatItem[] }>(
+    GET_USER_CHATS
+  );
 
   const renderedContent = useMemo(() => {
     if (loading) return <div className="p-4 text-center">Yükleniyor...</div>;
-    if (error) return <div className="p-4 text-center text-red-500">Hata: {error.message}</div>;
-    if (!data?.getChats || data.getChats.length === 0) return <div className="p-4 text-center">Henüz sohbet yok</div>;
+    if (error)
+      return (
+        <div className="p-4 text-center text-red-500">
+          Hata: {error.message}
+        </div>
+      );
+    if (!data?.getChats || data.getChats.length === 0)
+      return <div className="p-4 text-center">Henüz sohbet yok</div>;
 
     return (
       <ul>
         {data.getChats.map((chat) => (
           <li key={chat._id}>
-            <Link 
-              to={`/direct/t/${chat._id}`} 
-              className={`block p-1 mb-3 transition-colors ${chat._id === chatId ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+            <Link
+              to={`/direct/t/${chat._id}`}
+              className={`block p-1 mb-3 transition-colors ${
+                chat._id === chatId ? 'bg-blue-100' : 'hover:bg-gray-100'
+              }`}
             >
               <ChatParticipantCard
                 participants={chat.participants}
@@ -53,7 +65,9 @@ const ChatList: React.FC = () => {
 
   return (
     <div className="h-[95vh] overflow-y-auto">
-      <h2 className="text-xl font-bold p-4 sticky top-0 bg-white z-10 border-b">Mesajlar</h2>
+      <h2 className="text-xl font-bold p-4 sticky top-0 bg-white z-10 border-b">
+        Mesajlar
+      </h2>
       {renderedContent}
     </div>
   );
