@@ -1,9 +1,9 @@
-
 import { ApolloProvider } from '@apollo/client';
 import client from './graphql/apolloClient.ts';
 import ReduxProvider from './context/ReduxProvider.tsx';
 import Router from './Router/Router.tsx';
 import { BrowserRouter } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 function App() {
   return (
     <ApolloProvider client={client}>

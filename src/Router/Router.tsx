@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAppSelector } from '../context/hooks';
 import AppNavigator from './navigations/AppNavigator';
 import AuthNavigator from './navigations/AuthNavigator';

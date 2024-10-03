@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import AuthPage from '../../pages/Auth/AuthPage';
+import { useStatusUpdater } from '../../hooks/useStatusUpdater';
 
 const AuthNavigator = () => {
   return (

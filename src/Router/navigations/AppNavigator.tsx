@@ -23,6 +23,7 @@ import FollowingRequestPage from '../../pages/App/FollowingRequestPage';
 import InterestsPage from '../../pages/App/InterestsPage';
 import PostsILikedGrid from '../../components/App/PostsILikedGrid';
 import PostsILikedPage from '../../pages/App/PostsILikedPage';
+import { useStatusUpdater } from '../../hooks/useStatusUpdater';
 interface VideoCallStartedNotification {
   userName: string;
   chatId: string;
@@ -111,7 +112,7 @@ const IncomingCallListener = () => {
 
 const AppNavigator: React.FC = () => {
   const location = useLocation();
-
+  useStatusUpdater();
   // State içinde önceki sayfanın konumunu alıyoruz
   const state = location.state as { backgroundLocation?: Location };
   return (
