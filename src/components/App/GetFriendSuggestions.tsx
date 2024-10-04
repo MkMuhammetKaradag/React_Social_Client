@@ -13,26 +13,28 @@ const GetFriendSuggestions = () => {
   const friends = data.getFriendSuggestions as User[];
 
   return (
-    <div>
-      <h1 className="mb-3">Friend Suggestions</h1>
-      <div className="space-y-3">
+    <div className="border-b rounded-md shadow-md border-gray-300 p-2 ">
+      <h1 className="mb-3">FRIEND SUGGESTIONS</h1>
+      <div className="space-y-3 ">
         {friends.map((friend) => (
-          <div key={friend._id} className="flex items-center hover:bg-gray-100">
+          <Link
+            to={`/user/${friend._id}`}
+            key={friend._id}
+            className="flex p-3 rounded-t-md  items-center hover:bg-gray-100"
+          >
             <img
               src={friend.profilePhoto || 'https://via.placeholder.com/40'}
               alt="User"
               className="w-10 h-10 rounded-full mr-2 object-cover"
             />
             <div>
-              <Link to={`/user/${friend._id}`}>
-                <p className={`font-bo`}>{friend.userName}</p>
-              </Link>
+              <p className={`font-bo`}>{friend.userName}</p>
 
               <p className={`text-s`}>
                 {friend.firstName}-{friend.lastName}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

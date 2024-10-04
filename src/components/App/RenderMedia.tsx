@@ -28,7 +28,7 @@ const RenderMedia: React.FC<RenderMediaProps> = ({
     if (media.type === 'IMAGE') {
       return (
         <img
-          className=" h-full object-contain "
+          className=" h-full px-2 object-contain "
           src={`https://res.cloudinary.com/doarbqecd/image/upload/v1725363937/posts/${media.publicId}`}
           alt="Post content"
         />

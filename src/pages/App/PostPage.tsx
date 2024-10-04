@@ -19,8 +19,11 @@ interface GetPostVars {
 
 // Components
 const CloseButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <div className="absolute top-0 right-0 justify-end p-4">
-    <button onClick={onClick} className="text-white text-3xl">
+  <div className="absolute top-0 right-0 z-50 justify-end ">
+    <button
+      onClick={onClick}
+      className=" bg-black rounded-full text-gray-100 xl:bg-transparent xl:text-white text-3xl"
+    >
       <AiOutlineClose />
     </button>
   </div>
@@ -33,7 +36,7 @@ const NavigationButton: React.FC<{
 }> = ({ onClick, direction, isHidden }) => (
   <button
     onClick={onClick}
-    className={`${isHidden && 'hidden'} absolute ${
+    className={`${isHidden && 'invisible'}  ${
       direction === 'left' ? 'left-2' : 'right-2'
     } top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2`}
   >
@@ -47,8 +50,8 @@ const PostContent: React.FC<{
   currentMediaIndex: number;
   setCurrentMediaIndex: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ currentPost, postId, currentMediaIndex, setCurrentMediaIndex }) => (
-  <div className="bg-white w-full max-w-6xl grid grid-cols-3 h-full md:max-h-[95vh]">
-    <div className="relative h-full max-h-[95vh] md:col-span-2 col-span-3 flex justify-center">
+  <div className="bg-white w-full max-w-6xl grid grid-cols-3 h-full md:max-h-[95vh] max-h-[80vh]">
+    <div className="relative h-full  md:max-h-[95vh]   max-h-[80vh]  md:col-span-2 col-span-3 flex justify-center">
       <RenderMedia
         key={postId}
         media={currentPost.media}
@@ -56,12 +59,14 @@ const PostContent: React.FC<{
         setCurrentMediaIndex={setCurrentMediaIndex}
       />
     </div>
-    <PostRenderComments
-      isLiked={currentPost.isLiked}
-      likeCount={currentPost.likeCount}
-      postUser={currentPost.user}
-      postId={postId}
-    />
+    <div className="md:block hidden">
+      <PostRenderComments
+        isLiked={currentPost.isLiked}
+        likeCount={currentPost.likeCount}
+        postUser={currentPost.user}
+        postId={postId}
+      />
+    </div>
   </div>
 );
 
@@ -119,19 +124,20 @@ const PostPage: React.FC = () => {
   const currentPost = data.getPost;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0  bg-black bg-opacity-50 flex items-center justify-between z-50">
       <CloseButton onClick={handleClose} />
+      <NavigationButton
+        onClick={goToPreviousPost}
+        direction="left"
+        isHidden={postsIds.length === 0 || currentPostIndex === 0}
+      />
       <PostContent
         currentPost={currentPost}
         postId={postId}
         currentMediaIndex={currentMediaIndex}
         setCurrentMediaIndex={setCurrentMediaIndex}
       />
-      <NavigationButton
-        onClick={goToPreviousPost}
-        direction="left"
-        isHidden={postsIds.length === 0 || currentPostIndex === 0}
-      />
+
       <NavigationButton
         onClick={goToNextPost}
         direction="right"

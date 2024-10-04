@@ -11,7 +11,7 @@ import FollowersAndFollowingPage from '../../pages/App/FollowersAndFollowingPage
 import ChatWindow from '../../pages/App/ChatWindow';
 import DirectPage from '../../pages/App/DirectPage';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { Slide, ToastContainer, toast } from 'react-toastify';
 import { useSubscription } from '@apollo/client';
 import { VIDEO_CALL_STARTED } from '../../graphql/subscriptions/StartVideoCall';
 import { useAppSelector } from '../../context/hooks';
@@ -118,7 +118,7 @@ const AppNavigator: React.FC = () => {
   return (
     <AppLayout>
       <>
-        <ToastContainer />
+        <ToastContainer transition={Slide} />
         <IncomingCallListener />
         <Routes location={state?.backgroundLocation || location}>
           <Route path="/" element={<HomePage />} />

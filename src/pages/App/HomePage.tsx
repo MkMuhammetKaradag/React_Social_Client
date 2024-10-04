@@ -94,7 +94,7 @@ const HomePage = () => {
         </InfiniteScroll>
       </div>
       {/* Logout button */}
-      <div className="col-span-1 md:block hidden px-4 py-2 text-sm text-gray-700 ">
+      <div className="col-span-1 xl:block hidden px-4 py-2 text-sm text-gray-700 ">
         <GetFriendSuggestions />
       </div>
     </div>
